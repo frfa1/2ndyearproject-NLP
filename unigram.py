@@ -97,7 +97,7 @@ def  main():
     clf = UnigramModel()
     clf.fit(reviews, targets)
 
-    dev_data = pd.read_json('data/music_reviews_test.json', lines=True)[['reviewText','sentiment']]#.dropna()
+    dev_data = pd.read_json('data/music_reviews_test.json', lines=True)[['reviewText','sentiment']].dropna()
     dev_reviews, dev_targets = dev_data['reviewText'], dev_data['sentiment']
 
     y_pred = clf.predict(dev_reviews)
