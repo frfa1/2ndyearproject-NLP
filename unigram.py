@@ -8,11 +8,6 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.metrics.scores import accuracy
-#nltk.download('punkt')
-#nltk.download('stopwords')
-#nltk.download('PorterStemmer ')
-#nltk.download('averaged_perceptron_tagger')
-
 
 class UnigramModel:
     def __init__(
@@ -71,7 +66,7 @@ class UnigramModel:
             labels, 
             n: int = 5000
         ):
-        print('Fitting model ...\n\tCreating doc list and tokenizing all words ...')
+        print('Fitting model:\n\tCreating doc list and tokenizing all words ...')
         self.docs, self.all_words = self._make_docs(text, labels)
         print('\tCalculating word distribution ...')
         self.word_dist = self._get_word_distribution(self.all_words)
@@ -97,7 +92,7 @@ def  main():
     clf = UnigramModel()
     clf.fit(reviews, targets)
 
-    use_test = True
+    use_test = False
     if use_test:
         unseen = pd.read_json('data/music_reviews_test.json', lines=True)[['reviewText','sentiment']].dropna()
     else:
