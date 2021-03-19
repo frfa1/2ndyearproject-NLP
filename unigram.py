@@ -92,7 +92,7 @@ def  main():
     clf = UnigramModel()
     clf.fit(reviews, targets)
 
-    use_test = True
+    use_test = False
     if use_test:
         unseen = pd.read_json('data/music_reviews_test_masked.json', lines=True)[['reviewText','sentiment']].fillna(value=' ')
     else:
@@ -100,12 +100,10 @@ def  main():
     new_reviews, new_targets = unseen['reviewText'], unseen['sentiment']
 
     y_pred = clf.predict(new_reviews)
+    print(accuracy(new_targets,y_pred))
 
-    
-    #print(accuracy(new_targets,y_pred))
-
-    df = pd.DataFrame(data=y_pred,columns=['sentiment'])
-    df.to_csv('predictions.csv')
+    #df = pd.DataFrame(data=y_pred,columns=['id','prediction'])
+    #df.to_csv('predictions.csv')
 
 if __name__ == '__main__':
     main()
