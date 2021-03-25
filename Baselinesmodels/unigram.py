@@ -1,6 +1,7 @@
 # %%
 
 import pandas as pd
+import numpy as np
 import nltk
 import re
 from nltk.classify import NaiveBayesClassifier
@@ -29,7 +30,7 @@ class UnigramModel:
         cleaned = re.sub(r'[^(a-zA-Z)\s]','', text)
         tokens = word_tokenize(cleaned)
         if self.stem_words:
-            return [self.porter.stem(word) for word in tokens if word not in self.top_words]
+            return [self.porter.stem(word) for word in tokens if word not in self.stop_words]
         else:
             return [word.lower() for word in tokens if word not in self.stop_words]
 
@@ -49,7 +50,10 @@ class UnigramModel:
         return distribution
 
     def _get_n_most_frequent(self, n: int):
-        return sorted(self.word_dist.items(), key=lambda item: item[1],reverse=True)[:n]
+        if n:
+            return sorted(self.word_dist.items(), key=lambda item: item[1],reverse=True)[:n]
+        else:
+            return sorted(self.word_dist.items(), key=lambda item: item[1],reverse=True)
 
     def _get_features(self, text):
         if not self.most_frequent:
@@ -64,7 +68,7 @@ class UnigramModel:
             self, 
             text, 
             labels, 
-            n: int = 5000
+            n: int = None
         ):
         print('Fitting model:\n\tCreating doc list and tokenizing all words ...')
         self.docs, self.all_words = self._make_docs(text, labels)
@@ -89,21 +93,16 @@ def  main():
     data = pd.read_json('data/music_reviews_train.json', lines=True)[['reviewText','sentiment']].dropna()
     reviews, targets = data['reviewText'], data['sentiment']
 
-    clf = UnigramModel()
-    clf.fit(reviews, targets)
-
-    use_test = False
-    if use_test:
-        unseen = pd.read_json('data/music_reviews_test_masked.json', lines=True)[['reviewText','sentiment']].fillna(value=' ')
-    else:
-        unseen = pd.read_json('data/music_reviews_dev.json', lines=True)[['reviewText','sentiment']].fillna(value=' ')
+    unseen = pd.read_json('data/music_reviews_dev.json', lines=True)[['reviewText','sentiment']].fillna(value=' ')
     new_reviews, new_targets = unseen['reviewText'], unseen['sentiment']
 
+    clf = UnigramModel(stem_words=False)
+    clf.fit(reviews, targets, n=5000)
     y_pred = clf.predict(new_reviews)
-    print(accuracy(new_targets,y_pred))
 
-    #df = pd.DataFrame(data=y_pred,columns=['id','prediction'])
-    #df.to_csv('predictions.csv')
+    df = pd.DataFrame(data=y_pred,columns=['prediction'])
+    df['prediction'] = np.where(df.prediction == 'positive', 1, 0)
+    df.to_csv('predictions_new.csv')
 
 if __name__ == '__main__':
     main()
