@@ -9,7 +9,10 @@ from sklearn.metrics import accuracy_score
 from joblib import dump
 
 train_path = argv[1]
-save_model = argv[2]
+if (len(argv) == 3 and argv[2] == 'save'):
+    save_model = argv[2]
+else:
+    save_model = False
 
 class NaiveBayesClassifier:
     def __init__(self,dump_model=False, write_csv=False):
@@ -65,6 +68,11 @@ def main():
     train = pd.read_json(train_path, lines=True)[['reviewText','sentiment']].dropna()
     clf = NaiveBayesClassifier(dump_model=save_model)
     clf.fit(train['reviewText'],train['sentiment'])
+
+    test_path = '../data/music_reviews_dev.json'
+    test = pd.read_json(test_path, lines=True)[['reviewText','sentiment']].fillna(' ')
+    predictions = clf.predict(test['reviewText'])
+    clf.write_predictions(predictions)
 
 if __name__ == '__main__':
     main()
