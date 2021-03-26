@@ -1,6 +1,7 @@
+import numpy as np
 import pandas as pd
 import nltk
-import string
+from string import punctuation
 from sys import argv
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -8,11 +9,6 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 from joblib import dump
 
-train_path = argv[1]
-if (len(argv) == 3 and argv[2] == 'save'):
-    save_model = argv[2]
-else:
-    save_model = False
 
 class NaiveBayesClassifier:
     def __init__(self,dump_model=False, write_csv=False):
@@ -24,7 +20,7 @@ class NaiveBayesClassifier:
         self.tfidf_transformer = None
 
     def _preprocess_text(self, text: str) -> list:
-        puncs = string.punctuation
+        puncs = punctuation
         stops = stopwords.words('english')
         wo_punctuation = ''.join([char.lower() for char in text if char not in puncs])
         wo_stops = ' '.join([word for word in wo_punctuation.split() if word not in stops])
@@ -39,7 +35,8 @@ class NaiveBayesClassifier:
         self.model = MultinomialNB().fit(train_tfidf,labels)
         self.is_fitted = True
         if self.dump_model:
-            self.export(self.model)
+            self.export(self)
+        #print(dir(self))
 
     def predict(self, text: pd.Series):
         if not self.is_fitted:
@@ -55,7 +52,7 @@ class NaiveBayesClassifier:
     def export(self, model, name='baselineNB'):
         if not self.is_fitted:
             raise ValueError('Model not fitted')
-        dump(model, name+'.joblib') 
+        dump(self, name+'.joblib')
 
     def write_predictions(self, predictions) -> None:
         label2idx = {'negative': 0, 'positive': 1}
@@ -65,14 +62,22 @@ class NaiveBayesClassifier:
 
 
 def main():
+    train_path = argv[1]
+    if (len(argv) == 3 and argv[2] == 'save'):
+        save_model = argv[2]
+    else:
+        save_model = False
+
+
     train = pd.read_json(train_path, lines=True)[['reviewText','sentiment']].dropna()
     clf = NaiveBayesClassifier(dump_model=save_model)
     clf.fit(train['reviewText'],train['sentiment'])
+   # dump(clf, 'baselineNB.joblib')
 
-    test_path = '../data/music_reviews_dev.json'
-    test = pd.read_json(test_path, lines=True)[['reviewText','sentiment']].fillna(' ')
-    predictions = clf.predict(test['reviewText'])
-    clf.write_predictions(predictions)
+    #test_path = '../data/music_reviews_dev.json'
+    #test = pd.read_json(test_path, lines=True)[['reviewText','sentiment']].fillna(' ')
+   # predictions = clf.predict(test['reviewText'])
+   # clf.write_predictions(predictions)
 
 if __name__ == '__main__':
     main()
