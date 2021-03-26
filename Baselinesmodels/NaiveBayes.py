@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import nltk
 from string import punctuation
@@ -36,7 +35,6 @@ class NaiveBayesClassifier:
         self.is_fitted = True
         if self.dump_model:
             self.export(self)
-        #print(dir(self))
 
     def predict(self, text: pd.Series):
         if not self.is_fitted:
@@ -67,17 +65,11 @@ def main():
         save_model = argv[2]
     else:
         save_model = False
-
-
+    
     train = pd.read_json(train_path, lines=True)[['reviewText','sentiment']].dropna()
     clf = NaiveBayesClassifier(dump_model=save_model)
     clf.fit(train['reviewText'],train['sentiment'])
-   # dump(clf, 'baselineNB.joblib')
 
-    #test_path = '../data/music_reviews_dev.json'
-    #test = pd.read_json(test_path, lines=True)[['reviewText','sentiment']].fillna(' ')
-   # predictions = clf.predict(test['reviewText'])
-   # clf.write_predictions(predictions)
 
 if __name__ == '__main__':
     main()
