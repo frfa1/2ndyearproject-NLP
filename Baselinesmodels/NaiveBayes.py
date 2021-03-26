@@ -36,7 +36,7 @@ class NaiveBayesClassifier:
         if self.dump_model:
             self.export(self)
 
-    def predict(self, text: pd.Series):
+    def predict(self, text: pd.Series) -> pd.Series:
         if not self.is_fitted:
             raise ValueError('Model not fitted')
         preprocessed_text = text.apply(self._preprocess_text).tolist()
@@ -47,12 +47,12 @@ class NaiveBayesClassifier:
             self.write_predictions(predictions)
         return predictions
 
-    def export(self, model, name='baselineNB'):
+    def export(self, model, name: str = 'baselineNB') -> None:
         if not self.is_fitted:
             raise ValueError('Model not fitted')
         dump(self, name+'.joblib')
 
-    def write_predictions(self, predictions) -> None:
+    def write_predictions(self, predictions: pd.Series) -> None:
         label2idx = {'negative': 0, 'positive': 1}
         predictions = list(map(label2idx.get, predictions))
         df = pd.DataFrame(predictions, columns=['prediction'])
