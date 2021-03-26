@@ -61,7 +61,7 @@ class NaiveBayesClassifier:
 
 def main():
     train_path = argv[1]
-    if (len(argv) == 3 and argv[2] == 'save'):
+    if (len(argv) == 3 and argv[2].lower() == 'save'):
         save_model = argv[2]
     else:
         save_model = False
