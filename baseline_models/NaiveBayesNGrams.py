@@ -62,7 +62,7 @@ class NaiveBayesClassifier:
         label2idx = {'negative': 0, 'positive': 1}
         predictions = list(map(label2idx.get, predictions))
         df = pd.DataFrame(predictions, columns=['prediction'])
-        df.to_csv('NaiveBayesPredictions.csv',index_label='id')
+        df.to_csv('NGramNaiveBayesPredictions.csv',index_label='id')
 
 
 def main():
