@@ -15,11 +15,11 @@ def count_negations(string,negations,reg,mode='count'):
 
 
 def main():
-    prog = re.compile('\w+[\'\w]')
+    prog = re.compile('\w+\'\w|\w\w+') # this regex pattern search for any multiple of 
     text = pd.read_json('../data/music_reviews_train.json', lines=True)['reviewText'].fillna(' ').tolist()
-    n_negations = [count_negations(sentence,negations,prog,mode='binary') for sentence in text]
+    n_negations = [count_negations(sentence,negations,prog,mode='count') for sentence in text]
  
-    with open('../data/negation_bin_train.txt','w') as nf:
+    with open('../data/negation_count_train.txt','w') as nf:
         for line in n_negations:
             nf.write(str(line)+'\n')
     
