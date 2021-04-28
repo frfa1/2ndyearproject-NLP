@@ -31,12 +31,12 @@ def main():
     
     if 'binary' in args:    
         n_negations = [count_negations(sentence,negations,prog,mode='binary') for sentence in text]
-        with open('../data/negation_bin_train.txt','w') as nf:
+        with open('../features/negation_bin_train.txt','w') as nf:
             for line in n_negations:
                 nf.write(str(line)+'\n')
     else:
         n_negations = [count_negations(sentence,negations,prog,mode='count') for sentence in text]
-        with open('../data/negation_count_train.txt','w') as nf:
+        with open('../features/negation_count_train.txt','w') as nf:
             for line in n_negations:
                 nf.write(str(line)+'\n')
 
