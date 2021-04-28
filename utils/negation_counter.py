@@ -5,7 +5,7 @@ with open('../data/negations.txt') as f:
     negations = set(word.strip() for word in f.readlines())
 
 def count_negations(string,negations,reg,mode='count'):
-    negations_present = [word for word in reg.findall(string) if word in negations]
+    negations_present = [word for word in reg.findall(string.lower()) if word in negations]
     if mode == 'count':
         return len(negations_present)
     elif mode == 'binary':
@@ -15,14 +15,13 @@ def count_negations(string,negations,reg,mode='count'):
 
 
 def main():
-    prog = re.compile('\w+\'\w|\w\w+') # this regex pattern search for any multiple of 
+    prog = re.compile('\w+\'\w|\w\w+') # this regex pattern searches for words with an apostrophe before the last character or plain words
     text = pd.read_json('../data/music_reviews_train.json', lines=True)['reviewText'].fillna(' ').tolist()
-    n_negations = [count_negations(sentence,negations,prog,mode='count') for sentence in text]
+    n_negations = [count_negations(sentence,negations,prog,mode='binary') for sentence in text]
  
-    with open('../data/negation_count_train.txt','w') as nf:
+    with open('../data/negation_bin_train.txt','w') as nf:
         for line in n_negations:
             nf.write(str(line)+'\n')
-    
 
 if __name__ == '__main__':
     main()
