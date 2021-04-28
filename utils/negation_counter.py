@@ -1,10 +1,11 @@
 import pandas as pd
 import re
 
-with open('../data/negations.txt') as f:
+
+with open('../data/negations.txt') as f: # creates a set of negation words 
     negations = set(word.strip() for word in f.readlines())
 
-def count_negations(string,negations,reg,mode='count'):
+def count_negations(string: str, negations: set, reg, mode='count') -> int: 
     negations_present = [word for word in reg.findall(string.lower()) if word in negations]
     if mode == 'count':
         return len(negations_present)
