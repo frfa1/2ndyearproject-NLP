@@ -3,7 +3,7 @@ import re
 import loader
 from sys import argv
 
-def create(docs: list, mode='count', regex_pattern='\w+\'\w|\w\w+', export=False):
+def create(docs: list, mode='count', regex_pattern='\w+\'\w|\w\w+', export=False) -> list:
     with open('../data/negations.txt') as f: # creates a set of negation words 
         negations = set(word.strip() for word in f.readlines())
 
