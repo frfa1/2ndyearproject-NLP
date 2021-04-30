@@ -8,7 +8,7 @@ def ShoutcaseCounter(data, export=False):
     """
     shoutcase_count = []
     for review in data:
-        # remove words of length 1 or (Don't want I, A, CD etc. to count as a shoutcase)
+        # remove words of length 2 or less (Don't want I, A, CD etc. to count as a shoutcase)
         new_review = ' '.join([i for i in review.split() if len(i)>2])
 
         tokens = new_review.split()
