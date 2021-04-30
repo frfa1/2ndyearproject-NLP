@@ -35,10 +35,7 @@ def EmoticonSentiment(data, export=False):
     """
     p_count_list = []
     n_count_list = []
-    count = 0
     for review in data:
-        count += 1
-        print(count)
         p_count = 0
         n_count = 0
         tokens = review.split()
