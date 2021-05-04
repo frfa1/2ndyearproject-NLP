@@ -15,9 +15,6 @@ function recieves its features and labels from this dataset as series.
 
 """
 
-
-
-
 def validate_features(features: dict) -> bool:
     lengths = set()
     for value in features.values():
@@ -58,12 +55,18 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False):
         for feature_name,values in features.items():
             dataframes.append(pd.DataFrame(data=values,columns=[feature_name]))
         dataframes.append(labels)
-        return pd.concat(dataframes, axis=1)
-
+        final = pd.concat(dataframes, axis=1)
+        if export:
+            final.to_json('../data/new.json')
+        return final
 
 
 def main():
-    pass  
+    #train = loader.load_train()
+    #data = make_all(train['reviewText'], train['sentiment'],export=False)
+    #print(data)
+    pass
+
 
 if __name__ == '__main__':
     main()
