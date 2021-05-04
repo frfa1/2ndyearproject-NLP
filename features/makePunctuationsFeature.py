@@ -32,8 +32,6 @@ def main():
         get_exclamation_marks(data, export=True)
         get_question_marks(data, export=True)
 
-   # print(get_exclamation_marks(data))
-   # print(get_exclamation_marks(data))
 
 if __name__ == '__main__':
     main()
