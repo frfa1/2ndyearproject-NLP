@@ -7,6 +7,7 @@ import makePunctuationsFeature
 import makeShoutcaseFeature
 import loader
 import pandas as pd
+from datetime import datetime
 
 """
 The featurizer library enables the creation of our handcrafted features from any dataset that contains 
@@ -21,12 +22,16 @@ def validate_features(features: dict) -> bool:
         lengths.add(len(value))
     return len(lengths) == 1
 
+def safe_filename():
+    now = str(datetime.now().strftime("%b-%d-%H.%M.%S"))
+    return 'dataset_at_' + now
+
 def write_error_log(features: dict) -> None:
     with open('feature_count_log.txt','w') as f:
         for key,val in features.items():
             f.write(''.join([key,' has ',str(len(val)),' observations\n']))
 
-def make_all(docs, labels, use_all=True, error_info=False, export=False):
+def make_all(docs, labels, use_all=True, error_info=False, export=False, export_name=None):
     """
     Feed docs and labels as pd.Series objects from a pd.DataFrame and remember to run the
     pd.DataFrame.reset_index(drop=True) method on the dataframe before feeding it to this function!
@@ -57,15 +62,19 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False):
         dataframes.append(labels)
         final = pd.concat(dataframes, axis=1)
         if export:
-            final.to_json('../data/new.json')
+            if not export_name:
+                path = '../data/'+safe_filename()+'.json'
+                final.to_json(path)
+            else:
+                final.to_json(export_name)
         return final
 
 
 def main():
-    #train = loader.load_train()
-    #data = make_all(train['reviewText'], train['sentiment'],export=False)
-    #print(data)
-    pass
+    dataset = loader.load_train()
+    features,labels = dataset['reviewText'], dataset['sentiment']
+    data = make_all(features, labels,export=True,export_name='../data/train_handcrafted.json')
+
 
 
 if __name__ == '__main__':
