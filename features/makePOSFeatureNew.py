@@ -6,9 +6,7 @@ from sys import argv
 
 def get_pos_tags(data, export=False):
     """
-    Gets POS tag for all tokens
-    (It creates a different representation because the POS tags created using a set.
-    We maybe have to avoid this by creating a fixed list with the possible tags)
+    Gets POS tag for all tokens and converts into a list per sentence of the count of POS tags in the sentence.
     """
     nlp = spacy.load("en_core_web_sm")
     pos_tags = []
@@ -18,7 +16,9 @@ def get_pos_tags(data, export=False):
         tags = [token.pos_ for token in sentence]
         pos_tags.append(tags)
     
-    tokens = list(set([tag for tags in pos_tags for tag in tags]))
+    tokens = ["ADJ", "ADP", "ADV", "AUX", "CONJ", "CCONJ", "DET",
+              "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT",
+              "SCONJ", "SYM", "VERB", "X", "EOL", "SPACE"]
     token2id = {token: i for i, token in enumerate(tokens)}
     
     tmp_list = np.zeros((len(data), len(tokens)))
@@ -42,7 +42,7 @@ def main():
     data = loader.load_train()['reviewText'].tolist()
     
     if 'export' in args:
-        review_length_out = get_pos_tags(data[:10], export=True)
+        review_length_out = get_pos_tags(data, export=True)
 
 
 if __name__ == '__main__':
