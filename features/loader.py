@@ -22,11 +22,19 @@ def load_test(drop=True) -> pd.DataFrame:
     else:
         return data.fillna('')     
 
+def load_hard(drop=True) -> pd.DataFrame:
+    data = pd.read_json('../data/hard.json', lines=True)[['reviewText','sentiment']]
+    if drop:
+        return data.dropna().reset_index(drop=True)
+    else:
+        return data.fillna('')    
+
 
 def main():
     train = load_train()
     dev = load_dev()
     test = load_test()
+    hard = load_hard()
 
 if __name__ == '__main__':
     main()
