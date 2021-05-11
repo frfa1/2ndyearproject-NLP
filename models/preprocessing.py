@@ -31,7 +31,7 @@ def get_embs(emb="glove_6b"):
 
 # Preprocess function
 
-def preprocessing(sentences, max_length=None, embs):
+def preprocessing(sentences, embs, max_length=None):
     """
     Inputs sequence of strings (predictor). Outputs data as word embeddings with fixed length and tensor format.
     

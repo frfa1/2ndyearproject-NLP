@@ -6,10 +6,10 @@ import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
 
-class sentiNN(nn.Module):
+class sentiNNFeatures(nn.Module):
     """ 
     Neural Network for sentiment analysis. GRU model with binary classification linear layer on top.
-    WITHOUT Features.
+    WITH Features.
     """
     
     def __init__(self, input_size, hidden_size, num_layers, sequence_length):
