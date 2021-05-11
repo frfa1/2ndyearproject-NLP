@@ -1,7 +1,6 @@
 #%%
 import re
 from gensim.models import Word2Vec
-from gensim.models.phrases import Phraser, Phrases, ENGLISH_CONNECTOR_WORDS
 from loader import load_train, load_dev, load_test
 from nltk import word_tokenize
 
