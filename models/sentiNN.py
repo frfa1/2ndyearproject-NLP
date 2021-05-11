@@ -11,19 +11,20 @@ class sentiNN(nn.Module):
     Neural Network for sentiment analysis. GRU model with binary classification FFNN on top.
     """
     
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(self, input_size, hidden_size, num_layers, sequence_length):
         super(sentiNN, self).__init__()
         
         # Variables / parameters
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
+        self.sequence_length = sequence_length
         
         # Layers
         self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True)
-        #self.fc1 = nn.Linear(self.hidden_size * sequence_length, 100)
+        #self.fc1 = nn.Linear(self.hidden_size * self.sequence_length, 100)
         #self.fc2 = nn.Linear(100, out_features=2)
-        self.fc3 = nn.Linear(self.hidden_size * sequence_length * 2, out_features=2)
+        self.fc3 = nn.Linear(self.hidden_size * self.sequence_length * 2, out_features=2)
         
     def forward(self, x):        
         # Initialize GRU hidden state
@@ -37,6 +38,7 @@ class sentiNN(nn.Module):
         out = self.fc3(out)
         
         return out
+    
 
 
 if __name__ == '__main__':
