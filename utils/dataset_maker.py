@@ -27,6 +27,8 @@ def combine_all(paths=all_handcrafted,labels=None) -> pd.DataFrame:
     return pd.concat(dataframes, axis=1)
 
 
+
+
 def main():
     train_labels = loader.load_train()['sentiment'].tolist()
     df = combine_all()
