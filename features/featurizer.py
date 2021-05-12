@@ -71,9 +71,9 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False, export_
 
 
 def main():
-    dataset = loader.load_train()
+    dataset = loader.load_hard()
     features,labels = dataset['reviewText'], dataset['sentiment']
-    data = make_all(features, labels,export=True,export_name='../data/train_handcrafted.json')
+    data = make_all(features, labels,export=True,export_name='../data/hard.json')
 
 
 
