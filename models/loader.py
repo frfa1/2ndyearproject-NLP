@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def load_train(drop=True,balance=True) -> pd.DataFrame:
+def load_train(drop=True,balance=True,shuffle=True) -> pd.DataFrame:
     data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/music_reviews_train.json?token=AAAAWLY264NANGVT3WFCFDLAVYG2A', lines=True)[['reviewText','sentiment']]
 
     if balance:
@@ -16,7 +16,8 @@ def load_train(drop=True,balance=True) -> pd.DataFrame:
 
         bigger = bigger.iloc[:len(smaller)].reset_index(drop=True)
         data = pd.concat([bigger, smaller]).reset_index(drop=True)
-        data = data.sample(frac=1).reset_index(drop=True)
+        if shuffle:
+            data = data.sample(frac=1).reset_index(drop=True)
 
     if drop:
         return data.dropna().reset_index(drop=True)
