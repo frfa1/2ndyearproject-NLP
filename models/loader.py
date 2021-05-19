@@ -16,6 +16,7 @@ def load_train(drop=True,balance=True) -> pd.DataFrame:
 
         bigger = bigger.iloc[:len(smaller)].reset_index(drop=True)
         data = pd.concat([bigger, smaller]).reset_index(drop=True)
+        data = data.sample(frac=1).reset_index(drop=True)
 
     if drop:
         return data.dropna().reset_index(drop=True)
