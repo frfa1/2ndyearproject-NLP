@@ -8,8 +8,10 @@ If using Forticlient, use normal itu credentials
 
 ## 2. SSH connection
 
-Then ssh onto the hpc with
+Then ssh onto the HPC with
 
 `ssh frph@hpc.itu.dk`
+
+It is a **very** good idea to do this through VS code (use bottom left icon and then "Connect to host...") as it makes moving files on the HPC much easier
 
 where frph is replaced with your own credentials.
