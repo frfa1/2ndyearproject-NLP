@@ -40,7 +40,7 @@ The usual unix commands `cd, pwd, rm, mkdir` and can be used as well.
 
 Here you need to use a shell script. This script will point to the relative path of whather python script you want to run, which is why it is helpful to transfer your entire repo to the HPC. 
 
-The command to run the `runjob.sh` script type:
+The command to run the `runjob.sh` script is:
 
 `sbatch runjob.sh`
 
