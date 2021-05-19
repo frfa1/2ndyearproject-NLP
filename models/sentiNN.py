@@ -26,6 +26,9 @@ class sentiNN(nn.Module):
         #self.fc1 = nn.Linear(self.hidden_size * self.sequence_length, 100)
         #self.fc2 = nn.Linear(100, out_features=2)
         self.fc3 = nn.Linear(self.hidden_size * self.sequence_length * 2, out_features=2)
+
+        # Criterion
+        self.loss = nn.CrossEntropyLoss()
         
     def forward(self, x):        
         # Initialize GRU hidden state
