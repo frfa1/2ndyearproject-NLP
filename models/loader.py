@@ -18,7 +18,7 @@ def load_train(drop=True,balance=True) -> pd.DataFrame:
         data = pd.concat([bigger, smaller]).reset_index(drop=True)
 
     if drop:
-       return data.dropna().reset_index(drop=True)
+        return data.dropna().reset_index(drop=True)
     else:
         return data.fillna('')
 
