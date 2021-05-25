@@ -138,10 +138,10 @@ n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate
 print(epoch_score)
 
 # Grid search
-"""learning_rates = [0.001, 0.0001]
+learning_rates = [0.001, 0.0001]
 hidden_sizes = [50, 100, 300]
 for i in learning_rates:
-    for j in hidden_sizes:"""
+    for j in hidden_sizes:
 
 
 
