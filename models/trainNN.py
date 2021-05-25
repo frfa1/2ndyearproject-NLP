@@ -23,12 +23,12 @@ def get_data(sequence_length):
 
     print("Datasets loading done")
 
-    train_x = preprocessing(train["reviewText"], embs, max_length=sequence_length)[:30000]
-    train_y = binary_y(train["sentiment"])[:30000]
+    train_x = preprocessing(train["reviewText"], embs, max_length=sequence_length)
+    train_y = binary_y(train["sentiment"])
     all_train = TensorDataset(train_x, train_y)
 
-    dev_x = preprocessing(dev["reviewText"], embs, max_length=sequence_length)[:30000]
-    dev_y = binary_y(dev["sentiment"])[:30000]
+    dev_x = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
+    dev_y = binary_y(dev["sentiment"])
     all_dev = TensorDataset(dev_x, dev_y)
 
     # Batching the data
@@ -130,18 +130,20 @@ num_layers = 2
 # Training
 learning_rate = 0.001
 momentum = 0.9
-num_epoch = 1
+num_epoch = 10
 
 # Call train function
 model = sentiNN(input_size, hidden_size, num_layers, sequence_length).float()
 n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+
+print("Printing epoch scores:")
 print(epoch_score)
 
 # Grid search
-learning_rates = [0.001, 0.0001]
+"""learning_rates = [0.001, 0.0001]
 hidden_sizes = [50, 100, 300]
 for i in learning_rates:
-    for j in hidden_sizes:
+    for j in hidden_sizes:"""
 
 
 
