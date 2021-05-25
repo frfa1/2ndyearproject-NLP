@@ -3,7 +3,7 @@ import pandas as pd
 import re
 from sys import argv
 
-def create(docs: list, search_tokens: list, regex_pattern='\w+\'\w|\w\w+',mode='count', export=False):
+def create(docs: list, regex_pattern='\w+\'\w|\w\w+',mode='count', export=False):
     negations = [word.strip() for word in open('../data/negations.txt').readlines()]
     negative_words = [word.strip() for word in open('../data/negative.txt').readlines()]
     not_negative = set()
