@@ -41,9 +41,12 @@ def get_data(sequence_length):
     all_train = TensorDataset(train_x, train_y)
     '''
     # ------- added from Christian ------ #
-    train = load_train()
+    train = load_train_handcrafted()
     train_text, embs_matrix = process_embs(train['reviewText'], embs, dimension=sequence_length)
-    # ------- added from Christian ------ #
+    train_feats = train.drop(["reviewText", "sentiment"], axis=1)
+    #train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
+    
+    #print(np.concatenate((train_text, train_feats), axis=1))
 
     dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
     dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)
