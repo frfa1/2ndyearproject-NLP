@@ -103,7 +103,7 @@ def preprocess_to_idx(sentences, embs, max_length=None):
         if len(cleaned_sent) > max_length:
             train_data_idx[idx] = train_data_idx[idx][:max_length]
 
-    return torch.tensor(train_data_idx)
+    return train_data_idx
 
 
 def create_embedding_matrix(word_index, embedding_dict, dimension):
