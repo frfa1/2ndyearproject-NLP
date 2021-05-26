@@ -5,32 +5,51 @@ import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
 import joblib
+import pandas as pd
 
 from preprocessing import get_embs, preprocessing, binary_y
 from sentiNN import sentiNN
 
-from loader import load_train, load_dev, load_test
+from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
 from torch.utils.data import DataLoader, TensorDataset
 
 
 def get_data(sequence_length):
     # Get pretrained embeddings
-    embs = get_embs("glove_6b_300")
+    embs = get_embs("glove_6b")
 
     # Loading train, dev and test data
-    train = load_train()
-    dev = load_dev()
+    #train = load_train()
+    #dev = load_dev()
     #test = load_test()
+    train = load_train_handcrafted()
+    dev = load_dev_handcrafted()
 
     print("Datasets loading done")
 
-    train_x = preprocessing(train["reviewText"], embs, max_length=sequence_length)
+    print(train)
+    print("--")
+    print(train.drop(["reviewText", "sentiment"], axis=1).values)
+
+    train_text = preprocessing(train["reviewText"], embs, max_length=sequence_length)
+    train_feats = train.drop(["reviewText", "sentiment"], axis=1)
+    print(train_text)
+    print(train_feats)
+    print(np.concatenate((train_text, train_feats), axis=1))
+    train_x = torch.tensor(np.concatenate((train_text, train_feats), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
     train_y = binary_y(train["sentiment"])
     all_train = TensorDataset(train_x, train_y)
 
-    dev_x = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
+    exit()
+
+    dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
+    dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)
+    dev_x = torch.cat((dev_text, dev_feats), 0)
     dev_y = binary_y(dev["sentiment"])
     all_dev = TensorDataset(dev_x, dev_y)
+
+    print(train_x.shape)
+    print(train_text.shape)
 
     # Batching the data
     batch_size = 50

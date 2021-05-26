@@ -44,6 +44,8 @@ class sentiNN(nn.Module):
         x_text = x[:, :self.sequence_length, :]
         x_feat = x[:, self.sequence_length:, :]
 
+        print("Shapes... Text:", x_text.shape, "Features:", x_feat.shape)
+
         # Forward text
         out, _ = self.gru(x_text)
         out = out.reshape(out.shape[0], -1)
