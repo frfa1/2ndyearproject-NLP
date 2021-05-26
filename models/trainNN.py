@@ -7,7 +7,7 @@ from nltk import word_tokenize
 import joblib
 import pandas as pd
 
-from preprocessing import get_embs, preprocessing, binary_y, create_weight_matrix
+from preprocessing import get_embs, preprocessing, binary_y, create_weight_matrix, preprocess_to_idx
 from sentiNN import sentiNN
 
 from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
@@ -23,6 +23,10 @@ def get_data(sequence_length):
     train = load_train_handcrafted()
     train_text = preprocess_to_idx(train['reviewText'], embs, max_length=sequence_length)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
+
+    print(train_text)
+    print(train_feats)
+
     train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1))
     train_y = binary_y(train["sentiment"])
     all_train = TensorDataset(train_x, train_y)
@@ -145,8 +149,11 @@ learning_rate = 0.001
 momentum = 0.9
 num_epoch = 5
 
+print(data_shape)
+
 #### Call training once ####
 #model = sentiNN(hidden_size, num_layers, sequence_length).float()
+#(self, hidden_size, num_layers, sequence_length, weight_matrix, use_features:list=None)
 #n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 #print("Printing epoch scores:")
 #print(epoch_score)
@@ -157,7 +164,7 @@ learning_rates = [0.001, 0.0001]
 hidden_sizes = [50, 100, 300]
 # Note: Epochs are also searched, but each step is stored in training
 
-# Keeping scores:
+"""# Keeping scores:
 grid_scores = {}
 grid_scores["lr"] = 0
 grid_scores["hs"] = 0
@@ -182,9 +189,9 @@ for i in learning_rates:
                 grid_scores["best_model"] = n_model
                 grid_scores["epoch_score"] = epoch_score
           
-#### End Grid search ####
+#### End Grid search ####"""
 
-joblib.dump(grid_scores["best_model"], "trained_models/nn_baseline.joblib")
+#joblib.dump(grid_scores["best_model"], "trained_models/nn_baseline.joblib")
 
 
 def main():
