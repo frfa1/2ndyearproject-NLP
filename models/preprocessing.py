@@ -71,8 +71,8 @@ def preprocessing(sentences, embs, max_length=None):
         if len(cleaned_sent) > max_length:
             cleaned_sentence[idx] = cleaned_sentence[idx][:max_length]
             
-    
-    return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
+    return cleaned_sentence
+    #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
 
 
 def preprocess_to_idx(sentences, embs, max_length=None):
