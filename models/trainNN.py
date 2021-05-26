@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
+import joblib
 
 from preprocessing import get_embs, preprocessing, binary_y
 from sentiNN import sentiNN
@@ -14,7 +15,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 def get_data(sequence_length):
     # Get pretrained embeddings
-    embs = get_embs()
+    embs = get_embs("glove_6b_300")
 
     # Loading train, dev and test data
     train = load_train()
@@ -54,6 +55,7 @@ def training(model, train_batches, dev_batches, learning_rate, momentum, num_epo
 
         train_losses = [] # List of losses on train set
         val_losses = [] # List of losses on dev set
+        val_accuracies = [] # List of accuracies on dev set
 
         running_loss = 0.0
         for i, data in enumerate(train_batches, 0): # Iterates through each batch
@@ -66,57 +68,63 @@ def training(model, train_batches, dev_batches, learning_rate, momentum, num_epo
             running_loss += loss.item() # append loss
 
             # print statistics
-            if i % 100 == 0:    # print every 200 mini-batches
-                train_losses.append(running_loss / (i + 1)) # Append average loss to train_losses
+            m = 100 # print every m mini-batches
+            if i % m == 0 and i != 1:    # print every 200 mini-batches
+                train_losses.append(running_loss / m) # Append average loss to train_losses
 
-                val_loss = validate(dev_batches, model)
+                val_loss, val_acc = validate(dev_batches, model)
                 val_losses.append(val_loss) # Append loss on whole validation set of this iteration
+                val_accuracies.append(val_acc) # Same but for val accuracy
                 model.train() # Go back to training state
 
-                print('[%d, %5d] Training loss: %.3f | Validation loss: %.3f' %(epoch + 1, i + 1, running_loss / (i + 1), val_loss)) # Just some user interface
+                print('[%d, %5d] Training loss: %.3f | Validation loss: %.3f | Validation accuracy: %.1f' 
+                    %(epoch + 1, i + 1, running_loss / m, val_loss, val_acc)) # Just some user interface
 
                 running_loss = 0.0
 
-        # Average loss for the epoch:
+        # Average loss and accuracy for the epoch:
         avg_train_loss = 0
         avg_val_loss = 0
+        avg_val_acc = 0
         for j in range(len(train_losses)):
             avg_train_loss += train_losses[j]
             avg_val_loss += val_losses[j]
-        avg_train_loss, avg_val_loss = avg_train_loss/len(train_losses), avg_val_loss/len(val_losses)
-        epoch_score.append([avg_train_loss, avg_val_loss])
+            avg_val_acc += val_accuracies[j]
+        avg_train_loss = avg_train_loss / len(train_losses)
+        avg_val_loss = avg_val_loss / len(val_losses)
+        avg_val_acc = avg_val_acc / len(val_accuracies)
+        epoch_score.append([avg_train_loss, avg_val_loss, avg_val_acc])
 
     return model, epoch_score
 
 
 def validate(dev_batches, model):       
     criterion = model.loss # Get the loss function from the model class               
-    #correct = 0                                               
-    total = 0                                                 
+    correct = 0                                               
+    total, total2 = 0, 0                                               
     running_loss = 0.0                                        
-    model.eval()                                              
+    model.eval() # Go to evaluation state                                
     with torch.no_grad():                                     
         for i, data in enumerate(dev_batches):                     
             inputs, labels = data 
             #inputs, labels = inputs.float(), labels.float()  # Added. Maybe change to "device" later                   
             #inputs = inputs.to(device)                        
-            #labels = labels.to(device)   
-            #print(inputs, labels) # Just testing...                                             
+            #labels = labels.to(device)    
+
+            # Get the val loss                                        
             outputs = model(inputs.float())                           
             loss = criterion(outputs, labels)                    
             running_loss += loss.item()  
             total += 1  
             
-            #total += labels.size(0)
-            #_, predicted = torch.max(outputs.data, 1)  # Get the max value of each row, i.e. predicted                                  
-            #correct += (predicted == labels).sum().item()       
-    #mean_val_accuracy = (100 * correct / total)               
+            # Get the val accuracy
+            total2 += labels.size(0)
+            _, predicted = torch.max(outputs.data, 1)  # Get the max value of each row, i.e. predicted                                  
+            correct += (predicted == labels).sum().item()       
+    mean_val_accuracy = 100 * correct / total2           
     mean_val_loss = running_loss / total
 
-    return mean_val_loss #, mean_val_accuracy     
-    #mean_val_accuracy = accuracy(outputs,labels)             
-    #print('Validation Accuracy: %d %%' % (mean_val_accuracy)) 
-    #print('Validation Loss:'  ,mean_val_loss )   
+    return mean_val_loss, mean_val_accuracy 
 
 
 sequence_length = 40
@@ -130,21 +138,48 @@ num_layers = 2
 # Training
 learning_rate = 0.001
 momentum = 0.9
-num_epoch = 10
+num_epoch = 5
 
-# Call train function
-model = sentiNN(input_size, hidden_size, num_layers, sequence_length).float()
-n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+#### Call training once ####
+#model = sentiNN(input_size, hidden_size, num_layers, sequence_length).float()
+#n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+#print("Printing epoch scores:")
+#print(epoch_score)
 
-print("Printing epoch scores:")
-print(epoch_score)
-
-# Grid search
-"""learning_rates = [0.001, 0.0001]
+#### Grid search ####
+# Things to search for:
+learning_rates = [0.001, 0.0001]
 hidden_sizes = [50, 100, 300]
-for i in learning_rates:
-    for j in hidden_sizes:"""
+# Note: Epochs are also searched, but each step is stored in training
 
+# Keeping scores:
+grid_scores = {}
+grid_scores["lr"] = 0
+grid_scores["hs"] = 0
+grid_scores["epoch"] = 0
+grid_scores["best_model"] = 0
+grid_scores["epoch_score"] = 0
+best_loss = 1000000
+
+for i in learning_rates:
+    for j in hidden_sizes:
+
+        print("Learning rate:", i, "| Hidden size:", j)
+
+        model = sentiNN(input_size, j, num_layers, sequence_length).float()
+        n_model, epoch_score = training(model, train_batches, dev_batches, i, momentum, num_epoch)
+
+        for idx, k in enumerate(epoch_score):
+            if k[1] < best_loss:
+                grid_scores["lr"] = i
+                grid_scores["hs"] = j
+                grid_scores["epoch"] = idx
+                grid_scores["best_model"] = n_model
+                grid_scores["epoch_score"] = epoch_score
+          
+#### End Grid search ####
+
+joblib.dump(grid_scores["best_model"], "trained_models/nn_baseline.joblib")
 
 
 def main():

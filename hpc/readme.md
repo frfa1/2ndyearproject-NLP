@@ -22,7 +22,7 @@ where frph is replaced with your own credentials.
 
 You can transfer single files or entire directories to the HPC. If I wanted to transfer this repository, I would use the following command in my local terminal:
 
-`scp -r /Users/fh/Documents/GitHub/2ndyearproject frph@hpc.itu.dk:`
+scp -r C:/Users/Frederik/Desktop/Studie - ITU - Data Science/Second Year Project/2ndyearproject-2021-material/assignments/project/2ndyearproject frfa@hpc.itu.dk:
 
 You will then be prompted for your ITU password, and the transfer will start. 
 
