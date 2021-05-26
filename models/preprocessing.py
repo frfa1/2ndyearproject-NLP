@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
+import tensorflow as tf
 
 def get_embs(emb="glove_6b"):
     """
@@ -20,7 +21,7 @@ def get_embs(emb="glove_6b"):
     if emb == "glove_6b":
         # Glove 6B
         glove_dict = {}
-        with open("../embeddings/glove.6B.50d.txt", 'r') as f:
+        with open("../embeddings/glove.6B.50d.txt", 'r', encoding='utf8') as f:
             for line in f:
                 values = line.split()
                 word = values[0]
@@ -103,6 +104,25 @@ def preprocess_to_idx(sentences, embs, max_length=None):
             train_data_idx[idx] = train_data_idx[idx][:max_length]
 
     return torch.tensor(train_data_idx)
+
+
+def create_embedding_matrix(word_index, embedding_dict, dimension):
+  embedding_matrix = np.zeros((len(word_index)+1, dimension))
+
+  for word,index in word_index.items():
+    if word in embedding_dict:
+      embedding_matrix[index] = embedding_dict[word]
+  return embedding_matrix
+
+
+def process_embs(text, embs, dimension=50):
+    tokenizer = tf.keras.preprocessing.text.Tokenizer(split=" ")
+    tokenizer.fit_on_texts(text)
+    text_token = tokenizer.texts_to_sequences(text)
+
+    embedding_matrix = create_embedding_matrix(tokenizer.word_index, embedding_dict=embs, dimension=50)
+    
+    return text_token, embedding_matrix
 
 
 def binary_y(y):
