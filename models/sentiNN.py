@@ -12,7 +12,7 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, input_size, hidden_size, num_layers, sequence_length, use_features:list=None):
+    def __init__(self, input_size, hidden_size, num_layers, sequence_length, embs_matrix, use_features:list=None):
         super(sentiNN, self).__init__()
         
         # Variables / parameters
@@ -21,6 +21,12 @@ class sentiNN(nn.Module):
         self.num_layers = num_layers
         self.sequence_length = sequence_length
         self.use_features = use_features
+        
+        # ------ added from Christian ------- #
+        self.embs_matrix = embs_matrix
+        self.embedding = nn.Embedding(num_embeddings=self.embs_matrix.shape[0], embedding_dim=embs_matrix.shape[1])
+        self.embedding.weight = nn.Parameter(torch.tensor(embs_matrix, dtype=torch.float32))
+        # ------ added from Christian ------- #
         
         # Layers text
         self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True)
@@ -44,10 +50,14 @@ class sentiNN(nn.Module):
         x_text = x[:, :self.sequence_length, :]
         x_feat = x[:, self.sequence_length:, :]
 
-        print("Shapes... Text:", x_text.shape, "Features:", x_feat.shape)
+        # ------ added from Christian ------- #
+        embedded_text = self.embedding(x_text)
+        # ------ added from Christian ------- #
+        
+        print("Shapes... Text:", embedded_text.shape, "Features:", x_feat.shape)
 
         # Forward text
-        out, _ = self.gru(x_text)
+        out, _ = self.gru(embedded_text) #add embedded text
         out = out.reshape(out.shape[0], -1)
 
         # Forward features
