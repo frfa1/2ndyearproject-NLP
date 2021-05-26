@@ -27,6 +27,7 @@ def get_embs(emb="glove_6b"):
                 word = values[0]
                 vector = np.asarray(values[1:], "float32")
                 glove_dict[word] = vector
+            glove_dict["<PAD>"] = np.zeros((1,50))
 
         print('loading finished')
         return glove_dict
