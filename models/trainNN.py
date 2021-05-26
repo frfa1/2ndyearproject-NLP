@@ -15,55 +15,31 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def get_data(sequence_length):
+
     # Get pretrained embeddings
     embs = get_embs("glove_6b")
-    '''
-    # Loading train, dev and test data
-    #train = load_train()
-    #dev = load_dev()
-    #test = load_test()
-    train = load_train_handcrafted()
-    dev = load_dev_handcrafted()
-
-    print("Datasets loading done")
-
-    print(train)
-    print("--")
-    print(train.drop(["reviewText", "sentiment"], axis=1).values)
-
-    train_text = preprocessing(train["reviewText"], embs, max_length=sequence_length)
-    train_feats = train.drop(["reviewText", "sentiment"], axis=1)
-    print(train_text)
-    print(train_feats)
-    print(np.concatenate((train_text, train_feats), axis=1))
-    train_x = torch.tensor(np.concatenate((train_text, train_feats), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
-    train_y = binary_y(train["sentiment"])
-    all_train = TensorDataset(train_x, train_y)
-    '''
-    # ------- added from Christian ------ #
+ 
+    ### New ###
     train = load_train_handcrafted()
     train_text = preprocess_to_idx(train['reviewText'], embs, max_length=50)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
-    #train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
-    
-    #print(np.concatenate((train_text, train_feats), axis=1))
+    train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1))
+    train_y = binary_y(train["sentiment"])
+    all_train = TensorDataset(train_x, train_y)
 
-    """dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
-    dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)
-    dev_x = torch.cat((dev_text, dev_feats), 0)
+    dev = load_dev_handcrafted()
+    dev_text = preprocess_to_idx(dev['reviewText'], embs, max_length=50)
+    dev_feats = dev.drop(["reviewText", "sentiment"], axis=1)
+    dev_x = torch.tensor(np.concatenate((dev_text, dev_feats.values), axis=1))
     dev_y = binary_y(dev["sentiment"])
     all_dev = TensorDataset(dev_x, dev_y)
 
-    print(train_x.shape)
-    print(train_text.shape)
+    print("Datasets loading done")
 
     # Batching the data
     batch_size = 50
     train_batches = DataLoader(all_train, batch_size=batch_size)
-    dev_batches = DataLoader(all_dev, batch_size=batch_size)"""
-
-    #print(train_x.shape[2], train_x.shape[1], print(train_x.shape))
-    #print(train_batches.shape[2], train_batches.shape[1], print(train_batches.shape))
+    dev_batches = DataLoader(all_dev, batch_size=batch_size)
 
     return train_batches, dev_batches, train_x.shape
 
@@ -156,7 +132,7 @@ sequence_length = 50
 train_batches, dev_batches, data_shape = get_data(sequence_length)
 
 # Define network - Rewrite to grid search
-input_size = data_shape[2]
+# input_size = data_shape[2] # Old
 hidden_size = 300
 num_layers = 2
 
@@ -166,7 +142,7 @@ momentum = 0.9
 num_epoch = 5
 
 #### Call training once ####
-#model = sentiNN(input_size, hidden_size, num_layers, sequence_length).float()
+#model = sentiNN(hidden_size, num_layers, sequence_length).float()
 #n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 #print("Printing epoch scores:")
 #print(epoch_score)

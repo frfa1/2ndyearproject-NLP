@@ -22,12 +22,12 @@ def get_embs(emb="glove_6b"):
         # Glove 6B
         glove_dict = {}
         with open("../embeddings/glove.6B.50d.txt", 'r', encoding='utf8') as f:
-            for i in f:
+            for line in f:
                 values = line.split()
                 word = values[0]
                 vector = np.asarray(values[1:], "float32")
                 glove_dict[word] = vector
-            glove_dict["<PAD>"] = np.zeros((1,50))
+            glove_dict["<PAD>"] = np.zeros((50,))
 
         print('loading finished')
         return glove_dict

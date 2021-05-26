@@ -12,24 +12,24 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, input_size, hidden_size, num_layers, sequence_length, embs_matrix, use_features:list=None):
+    def __init__(self, hidden_size, num_layers, sequence_length, embs_matrix, use_features:list=None): # input_size (Old)
         super(sentiNN, self).__init__()
         
         # Variables / parameters
-        self.input_size = input_size
+        #self.input_size = input_size # Old
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.sequence_length = sequence_length
         self.use_features = use_features
-        
-        # ------ added from Christian ------- #
         self.embs_matrix = embs_matrix
+        
+        # Embedding layer
         self.embedding = nn.Embedding(num_embeddings=self.embs_matrix.shape[0], embedding_dim=self.embs_matrix.shape[1])
         self.embedding.weight = nn.Parameter(torch.tensor(self.embs_matrix, dtype=torch.float32))
-        # ------ added from Christian ------- #
         
         # Layers text
-        self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True)
+        #self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # Old
+        self.gru = nn.GRU(self.embs_matrix.shape[1], self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # With emb layer
 
         # Layers features
         if self.use_features:
