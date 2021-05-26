@@ -44,8 +44,6 @@ def get_data(sequence_length):
     train = load_train()
     train_text, embs_matrix = process_embs(train['reviewText'], embs, dimension=sequence_length)
     # ------- added from Christian ------ #
-    
-    exit()
 
     dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
     dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)

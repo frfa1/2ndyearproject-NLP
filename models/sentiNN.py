@@ -24,8 +24,8 @@ class sentiNN(nn.Module):
         
         # ------ added from Christian ------- #
         self.embs_matrix = embs_matrix
-        self.embedding = nn.Embedding(num_embeddings=self.embs_matrix.shape[0], embedding_dim=embs_matrix.shape[1])
-        self.embedding.weight = nn.Parameter(torch.tensor(embs_matrix, dtype=torch.float32))
+        self.embedding = nn.Embedding(num_embeddings=self.embs_matrix.shape[0], embedding_dim=self.embs_matrix.shape[1])
+        self.embedding.weight = nn.Parameter(torch.tensor(self.embs_matrix, dtype=torch.float32))
         # ------ added from Christian ------- #
         
         # Layers text
