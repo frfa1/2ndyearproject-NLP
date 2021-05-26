@@ -7,7 +7,7 @@ from nltk import word_tokenize
 import joblib
 import pandas as pd
 
-from preprocessing import get_embs, preprocessing, binary_y, preprocess_to_idx
+from preprocessing import get_embs, preprocessing, binary_y, create_weight_matrix
 from sentiNN import sentiNN
 
 from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
@@ -130,6 +130,10 @@ def validate(dev_batches, model):
 
 sequence_length = 50
 train_batches, dev_batches, data_shape = get_data(sequence_length)
+
+# added from Christian
+embs = get_embs()
+weight_matrix = create_weight_matrix(embs)
 
 # Define network - Rewrite to grid search
 # input_size = data_shape[2] # Old

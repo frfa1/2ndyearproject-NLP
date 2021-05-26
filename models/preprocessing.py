@@ -80,8 +80,11 @@ def preprocess_to_idx(sentences, embs, max_length=None):
 
     word_idx = dict((word, i) for i, word in enumerate(list(embs))) #create indices from embeddings
     
+    return word_idx
+    #glove = {w: embs[word_idx[w]] for w in embs.keys()}
+    
     sent_length = 0
-    train_data_idx = list()    
+    train_data_idx = list()
     for line in sentences:
         clean_line = word_tokenize(line)                     #tokenize line
         line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
@@ -103,7 +106,64 @@ def preprocess_to_idx(sentences, embs, max_length=None):
         if len(cleaned_sent) > max_length:
             train_data_idx[idx] = train_data_idx[idx][:max_length]
 
-    return train_data_idx
+
+#import loader
+#train = loader.load_train()
+#embs = get_embs()
+#build vocab
+
+def build_vocab(text):
+    vocab = []
+    for sentence in text:
+        sentence = word_tokenize(sentence)          # tokenize
+        for word in sentence:
+            if word.lower() not in vocab:
+                vocab.append(word.lower())
+    
+    with open("vocab.txt", "w") as f:
+        for word in vocab:
+            f.write(word + "\n")
+
+#build_vocab(train['reviewText'])
+
+
+def create_weight_matrix(embs):
+    '''
+    Creates weight matrix, where each index is a vector
+    If word does not exists, it creates a random vector (np.random.normal(scale=0.6, size=(50, ))
+    '''
+    with open("vocab.txt", 'r', encoding='utf8') as f:
+        vocab = []
+        for line in f:
+            vocab.append(line)
+            
+    matrix_len = len(vocab)
+    weights_matrix = np.zeros((matrix_len, 50))
+    words_found = 0
+
+    for i, word in enumerate(vocab):
+        try:
+            weights_matrix[i] = embs[word]
+            words_found += 1
+        except KeyError:
+            weights_matrix[i] = np.random.normal(scale=0.6, size=(50, ))
+    
+    return weights_matrix
+
+def create_emb_layer(weights_matrix, non_trainable=False):
+    '''
+    Creates embeddings for self.embedding in sentiNN
+    '''
+    
+    num_embeddings, embedding_dim = weights_matrix.shape
+    emb_layer = nn.Embedding(num_embeddings, embedding_dim)
+    emb_layer.load_state_dict({'weight': torch.tensor(weights_matrix)})
+    
+    if non_trainable:
+        emb_layer.weight.requires_grad = False
+
+    return emb_layer, num_embeddings, embedding_dim
+
 
 
 def create_embedding_matrix(word_index, embedding_dict, dimension):

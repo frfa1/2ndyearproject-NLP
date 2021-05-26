@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
+from preprocessing import create_emb_layer
 
 class sentiNN(nn.Module):
     """ 
@@ -12,7 +13,7 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, hidden_size, num_layers, sequence_length, embs_matrix, use_features:list=None): # input_size (Old)
+    def __init__(self, hidden_size, num_layers, sequence_length, weight_matrix, use_features:list=None): # input_size (Old)
         super(sentiNN, self).__init__()
         
         # Variables / parameters
@@ -21,15 +22,14 @@ class sentiNN(nn.Module):
         self.num_layers = num_layers
         self.sequence_length = sequence_length
         self.use_features = use_features
-        self.embs_matrix = embs_matrix
+        self.weight_matrix = weight_matrix
         
-        # Embedding layer
-        self.embedding = nn.Embedding(num_embeddings=self.embs_matrix.shape[0], embedding_dim=self.embs_matrix.shape[1])
-        self.embedding.weight = nn.Parameter(torch.tensor(self.embs_matrix, dtype=torch.float32))
+        # Embedding layer (modified from Christian)
+        self.embedding, num_embeddings, embedding_dim = create_emb_layer(self.weight_matrix)
         
         # Layers text
         #self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # Old
-        self.gru = nn.GRU(self.embs_matrix.shape[1], self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # With emb layer
+        self.gru = nn.GRU(embedding_dim, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # With emb layer
 
         # Layers features
         if self.use_features:
