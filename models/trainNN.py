@@ -48,7 +48,7 @@ def get_data(sequence_length):
     
     #print(np.concatenate((train_text, train_feats), axis=1))
 
-"""    dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
+    """dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
     dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)
     dev_x = torch.cat((dev_text, dev_feats), 0)
     dev_y = binary_y(dev["sentiment"])
