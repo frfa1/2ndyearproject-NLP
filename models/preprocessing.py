@@ -1,3 +1,4 @@
+#%%
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -72,6 +73,36 @@ def preprocessing(sentences, embs, max_length=None):
             
     
     return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
+
+
+def preprocess_to_idx(sentences, embs, max_length=None):
+
+    word_idx = dict((word, i) for i, word in enumerate(list(embs))) #create indices from embeddings
+    
+    sent_length = 0
+    train_data_idx = list()    
+    for line in sentences:
+        clean_line = word_tokenize(line)                     #tokenize line
+        line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
+        line_indices = list(map(word_idx.get, line_clean))   #map words to indices
+        line_no_none = list(filter(None, line_indices))      #remove None values
+        if len(line_no_none) > sent_length:
+            sent_length = len(line_no_none)
+        train_data_idx.append(line_no_none)
+
+    # Padding to longest sentence length -- Or max length variable if defined
+    if not max_length:
+        max_length = sent_length
+        
+    # Padding to longest sentence length
+    for idx, cleaned_sent in enumerate(train_data_idx):
+        if len(cleaned_sent) < max_length:
+            for i in range(max_length - len(cleaned_sent)):
+                cleaned_sent.append(0)
+        if len(cleaned_sent) > max_length:
+            train_data_idx[idx] = train_data_idx[idx][:max_length]
+
+    return torch.tensor(train_data_idx)
 
 
 def binary_y(y):

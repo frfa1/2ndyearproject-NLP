@@ -5,6 +5,9 @@ import makeLengthsFeature
 import makeNegationFeature
 import makePunctuationsFeature
 import makeShoutcaseFeature
+import makeNegatedNeg
+import makeNegatedPos
+import makeNegationDiscourse
 import loader
 import pandas as pd
 from datetime import datetime
@@ -37,18 +40,23 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False, export_
     pd.DataFrame.reset_index(drop=True) method on the dataframe before feeding it to this function!
     """
     features = {}
-    features['elongated_count'] = makeElongatedFeature.create(docs,mode='count')
-    features['elongated_binary'] = makeElongatedFeature.create(docs,mode='binary')
-    features['n_emoticons'] = makeEmoticonFeature.EmoticonSentiment(docs)
-    features['irrealis_count'] = makeIrrealisFeature.create(docs,mode='count')
-    features['irrealis_binary'] = makeIrrealisFeature.create(docs,mode='binary')
-    features['avg_review_length'] = makeLengthsFeature.get_review_length(docs)
-    features['avg_word_length'] = makeLengthsFeature.get_avg_word_length(docs)
-    features['negation_count'] = makeNegationFeature.create(docs,mode='count')
+  #  features['elongated_count'] = makeElongatedFeature.create(docs,mode='count')
+   # features['elongated_binary'] = makeElongatedFeature.create(docs,mode='binary')
+   # features['n_emoticons'] = makeEmoticonFeature.EmoticonSentiment(docs)
+   # features['irrealis_count'] = makeIrrealisFeature.create(docs,mode='count')
+    #features['irrealis_binary'] = makeIrrealisFeature.create(docs,mode='binary')
+    #features['avg_review_length'] = makeLengthsFeature.get_review_length(docs)
+    #features['avg_word_length'] = makeLengthsFeature.get_avg_word_length(docs)
+    #features['negation_count'] = makeNegationFeature.create(docs,mode='count')
     features['negation_binary'] = makeNegationFeature.create(docs,mode='binary')
-    features['exclamation_mark_count'] = makePunctuationsFeature.get_exclamation_marks(docs)
-    features['question_mark_count'] = makePunctuationsFeature.get_question_marks(docs)
-    features['shoutcase_count'] = makeShoutcaseFeature.ShoutcaseCounter(docs)
+    #features['exclamation_mark_count'] = makePunctuationsFeature.get_exclamation_marks(docs)
+    #features['question_mark_count'] = makePunctuationsFeature.get_question_marks(docs)
+    #features['shoutcase_count'] = makeShoutcaseFeature.ShoutcaseCounter(docs)
+    features['negated_positive'] = makeNegatedPos.create(docs)
+    features['negated_negative'] = makeNegatedNeg.create(docs)
+    features['negation_first_half'] = makeNegationDiscourse.create(docs)[0]
+    features['negation_second_half'] = makeNegationDiscourse.create(docs)[1]
+
 
     if not validate_features(features):
         if error_info:
@@ -56,7 +64,7 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False, export_
         raise ValueError('Inconsistent number of observations in features.')
 
     if use_all:
-        dataframes = []
+        dataframes = [docs]
         for feature_name,values in features.items():
             dataframes.append(pd.DataFrame(data=values,columns=[feature_name]))
         dataframes.append(labels)
@@ -71,11 +79,11 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False, export_
 
 
 def main():
-    dataset = loader.load_hard()
+    dataset = loader.load_dev()
     features,labels = dataset['reviewText'], dataset['sentiment']
-    data = make_all(features, labels,export=True,export_name='../data/hard.json')
+    data = make_all(features,labels,export=True,export_name='../data/dev_handcrafted.json')
 
-
+    print(data)
 
 if __name__ == '__main__':
     main()
