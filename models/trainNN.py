@@ -7,7 +7,7 @@ from nltk import word_tokenize
 import joblib
 import pandas as pd
 
-from preprocessing import get_embs, preprocessing, binary_y, process_embs
+from preprocessing import get_embs, preprocessing, binary_y, preprocess_to_idx
 from sentiNN import sentiNN
 
 from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
@@ -42,7 +42,7 @@ def get_data(sequence_length):
     '''
     # ------- added from Christian ------ #
     train = load_train_handcrafted()
-    train_text, embs_matrix = process_embs(train['reviewText'], embs, dimension=sequence_length)
+    train_text = preprocess_to_idx(train['reviewText'], embs, max_length=50)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
     #train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
     

@@ -22,7 +22,7 @@ def get_embs(emb="glove_6b"):
         # Glove 6B
         glove_dict = {}
         with open("../embeddings/glove.6B.50d.txt", 'r', encoding='utf8') as f:
-            for line in f:
+            for i in f:
                 values = line.split()
                 word = values[0]
                 vector = np.asarray(values[1:], "float32")
@@ -33,7 +33,6 @@ def get_embs(emb="glove_6b"):
         return glove_dict
 
 # Preprocess function
-
 def preprocessing(sentences, embs, max_length=None):
     """
     Inputs sequence of strings (predictor). Outputs data as word embeddings with fixed length and tensor format.
@@ -100,7 +99,7 @@ def preprocess_to_idx(sentences, embs, max_length=None):
     for idx, cleaned_sent in enumerate(train_data_idx):
         if len(cleaned_sent) < max_length:
             for i in range(max_length - len(cleaned_sent)):
-                cleaned_sent.append(0)
+                cleaned_sent.append(400000)
         if len(cleaned_sent) > max_length:
             train_data_idx[idx] = train_data_idx[idx][:max_length]
 
@@ -108,13 +107,12 @@ def preprocess_to_idx(sentences, embs, max_length=None):
 
 
 def create_embedding_matrix(word_index, embedding_dict, dimension):
-  embedding_matrix = np.zeros((len(word_index)+1, dimension))
+    embedding_matrix = np.zeros((len(word_index)+1, dimension))
 
-  for word,index in word_index.items():
-    if word in embedding_dict:
-      embedding_matrix[index] = embedding_dict[word]
-  return embedding_matrix
-
+    for word,index in word_index.items():
+        if word in embedding_dict:
+            embedding_matrix[index] = embedding_dict[word]
+    return embedding_matrix
 
 def process_embs(text, embs, dimension=50):
     tokenizer = tf.keras.preprocessing.text.Tokenizer(split=" ")
