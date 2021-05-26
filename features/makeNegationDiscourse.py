@@ -33,14 +33,19 @@ def create(docs: list, regex_pattern='\w+\'\w|\w\w+', export=False) -> list:
             for pair in positions:
                 nf.write(','.join(pair)+'\n')
 
-    return positions
+    firsts,lasts = [],[]
+    for pair in positions:
+        firsts.append(pair[0])
+        lasts.append(pair[1])
+    return firsts,lasts
             
 
 def main():
     args = set(argv)
     data = loader.load_train()['reviewText'].tolist()
 
-    #out = create(data,export=False)
+    out = create(data,export=False)
+    print(len(out[0]),len(out[1]))
 
     if 'export' in args:
         out = create(data,export=True)
