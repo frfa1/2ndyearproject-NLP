@@ -7,7 +7,7 @@ from nltk import word_tokenize
 import joblib
 import pandas as pd
 
-from preprocessing import get_embs, preprocessing, binary_y
+from preprocessing import get_embs, preprocessing, binary_y, process_embs
 from sentiNN import sentiNN
 
 from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader, TensorDataset
 def get_data(sequence_length):
     # Get pretrained embeddings
     embs = get_embs("glove_6b")
-
+    '''
     # Loading train, dev and test data
     #train = load_train()
     #dev = load_dev()
@@ -39,7 +39,12 @@ def get_data(sequence_length):
     train_x = torch.tensor(np.concatenate((train_text, train_feats), axis=1)) #train_x = torch.cat((train_text, train_feats), 0)
     train_y = binary_y(train["sentiment"])
     all_train = TensorDataset(train_x, train_y)
-
+    '''
+    # ------- added from Christian ------ #
+    train = load_train()
+    train_text, embs_matrix = process_embs(train['reviewText'], embs, dimension=sequence_length)
+    # ------- added from Christian ------ #
+    
     exit()
 
     dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
@@ -146,7 +151,7 @@ def validate(dev_batches, model):
     return mean_val_loss, mean_val_accuracy 
 
 
-sequence_length = 40
+sequence_length = 50
 train_batches, dev_batches, data_shape = get_data(sequence_length)
 
 # Define network - Rewrite to grid search
