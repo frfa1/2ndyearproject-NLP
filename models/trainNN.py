@@ -48,7 +48,7 @@ def get_data(sequence_length):
     
     #print(np.concatenate((train_text, train_feats), axis=1))
 
-    dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
+"""    dev_text = preprocessing(dev["reviewText"], embs, max_length=sequence_length)
     dev_feats = torch.tensor(dev.drop(["reviewText", "sentiment"], axis=1).values)
     dev_x = torch.cat((dev_text, dev_feats), 0)
     dev_y = binary_y(dev["sentiment"])
@@ -60,7 +60,7 @@ def get_data(sequence_length):
     # Batching the data
     batch_size = 50
     train_batches = DataLoader(all_train, batch_size=batch_size)
-    dev_batches = DataLoader(all_dev, batch_size=batch_size)
+    dev_batches = DataLoader(all_dev, batch_size=batch_size)"""
 
     #print(train_x.shape[2], train_x.shape[1], print(train_x.shape))
     #print(train_batches.shape[2], train_batches.shape[1], print(train_batches.shape))
