@@ -6,6 +6,8 @@ import torch.nn.functional as F
 import numpy as np
 from nltk import word_tokenize
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 class sentiNNFeatures(nn.Module):
     """ 
     Neural Network for sentiment analysis. GRU model with binary classification linear layer on top.

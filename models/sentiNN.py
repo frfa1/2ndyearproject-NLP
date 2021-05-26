@@ -7,6 +7,8 @@ import numpy as np
 from nltk import word_tokenize
 from preprocessing import create_emb_layer
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 class sentiNN(nn.Module):
     """ 
     Neural Network for sentiment analysis. GRU model with binary classification linear layer on top.

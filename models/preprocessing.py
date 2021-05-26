@@ -7,6 +7,8 @@ import numpy as np
 from nltk import word_tokenize
 import tensorflow as tf
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def get_embs(emb="glove_6b"):
     """
     Load embeddings

@@ -13,6 +13,8 @@ from sentiNN import sentiNN
 from loader import load_train, load_dev, load_test, load_train_handcrafted, load_dev_handcrafted
 from torch.utils.data import DataLoader, TensorDataset
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def get_data(sequence_length):
 
