@@ -24,6 +24,9 @@ def load_train(drop=True,balance=True,shuffle=True) -> pd.DataFrame:
     else:
         return data.fillna('')
 
+def load_train_handcrafted():
+    pass
+
 def load_dev(drop=True) -> pd.DataFrame:
     data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/music_reviews_dev.json?token=AAAAWLYHC7D2KFTGTBH6TXDAVYG5O', lines=True)[['reviewText','sentiment']]
     if drop:
