@@ -4,9 +4,7 @@ import loader
 from sys import argv
 
 def create(docs: list, mode='count', regex_pattern='\w+\'\w|\w\w+', export=False) -> list:
-    with open('../data/irrealis.txt') as f: # creates a set of negation words 
-        irrealis = set(word.strip() for word in f.readlines())
-
+    irrealis = set(['should','could','would'])
     prog = re.compile(regex_pattern)
 
     def count_irrealis(search_string, re_object, mode):
