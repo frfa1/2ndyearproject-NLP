@@ -23,7 +23,7 @@ def get_data(sequence_length):
  
     ### New ###
     train = load_train_handcrafted()
-    train_text = preprocess_to_idx(train['reviewText'], embs, max_length=sequence_length)
+    train_text = preprocess_to_idx(train['reviewText'], max_length=sequence_length)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
 
     print(train_text)
