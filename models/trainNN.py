@@ -26,8 +26,12 @@ def get_data(sequence_length):
     train_text = preprocess_to_idx(train['reviewText'], max_length=sequence_length)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
 
-    print(train_text)
-    print(train_feats)
+    conc = np.concatenate((train_text, train_feats.values), axis=1)
+    temp = []
+    for i in conc:
+        temp.append(i)
+    torch.tensor(temp)
+    print("Success")
 
     train_x = torch.tensor(np.concatenate((train_text, train_feats.values), axis=1))
     train_y = binary_y(train["sentiment"])
@@ -47,7 +51,7 @@ def get_data(sequence_length):
     train_batches = DataLoader(all_train, batch_size=batch_size)
     dev_batches = DataLoader(all_dev, batch_size=batch_size)
 
-    return train_batches, dev_batches, train_x.shape
+    return train_batches, dev_batches, train_x.shape, embs
 
 
 def training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch):
@@ -135,10 +139,9 @@ def validate(dev_batches, model):
 
 
 sequence_length = 50
-train_batches, dev_batches, data_shape = get_data(sequence_length)
+train_batches, dev_batches, data_shape, embs = get_data(sequence_length)
 
-# added from Christian
-embs = get_embs()
+# Get initialized weight matrix
 weight_matrix = create_weight_matrix(embs)
 
 # Define network - Rewrite to grid search
@@ -154,7 +157,7 @@ num_epoch = 5
 print(data_shape)
 
 #### Call training once ####
-#model = sentiNN(hidden_size, num_layers, sequence_length).float()
+#model = sentiNN(hidden_size, num_layers, sequence_length, weight_matrix, ).float()
 #(self, hidden_size, num_layers, sequence_length, weight_matrix, use_features:list=None)
 #n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 #print("Printing epoch scores:")
