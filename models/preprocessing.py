@@ -94,7 +94,7 @@ def preprocess_to_idx(sentences, max_length=None):
     for line in sentences:
         clean_line = word_tokenize(line)                     #tokenize line
         line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
-        line_indices = [map(word_idx.get, line_clean)]   #map words to indices
+        line_indices = list(map(word_idx.get, line_clean))   #map words to indices
         #line_no_none = list(filter(None, line_indices))      #remove None values
         if len(line_indices) > sent_length:
             sent_length = len(line_indices)
@@ -111,6 +111,19 @@ def preprocess_to_idx(sentences, max_length=None):
                 cleaned_sent.append(400000)
         if len(cleaned_sent) > max_length:
             train_data_idx[idx] = train_data_idx[idx][:max_length]
+
+    print(len(train_data_idx[0]))
+    for sent in train_data_idx:
+        for word in sent:
+            try:
+                if type(word) == int:
+                    continue
+                else:
+                    print(type(word))
+                    print(word)
+            except:
+                print(word)
+                continue
 
     return train_data_idx
 
