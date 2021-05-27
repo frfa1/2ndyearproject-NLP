@@ -15,7 +15,7 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, hidden_size, num_layers, sequence_length, weight_matrix, num_features=None): # input_size (Old)
+    def __init__(self, hidden_size, num_layers, sequence_length, vocab_size, num_features=None): # input_size (Old) weight_matrix
         super(sentiNN, self).__init__()
         
         # Variables / parameters
@@ -24,10 +24,12 @@ class sentiNN(nn.Module):
         self.num_layers = num_layers
         self.sequence_length = sequence_length
         self.num_features = num_features
-        self.weight_matrix = weight_matrix
+        self.vocab_size = vocab_size
+        #self.weight_matrix = weight_matrix
         
         # Embedding layer (modified from Christian)
-        self.embedding, num_embeddings, embedding_dim = create_emb_layer(self.weight_matrix)
+        #self.embedding, num_embeddings, embedding_dim = create_emb_layer(self.weight_matrix) # pretrained embs
+        self.embedding = nn.Embedding(self.vocab_size, 50) # random embs
         
         # Layers text
         #self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # Old
