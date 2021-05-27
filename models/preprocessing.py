@@ -77,15 +77,18 @@ def preprocessing(sentences, embs, max_length=None):
     return cleaned_sentence
     #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
 
+#embs = get_embs()
+#print(embs['the'])
+
 
 def preprocess_to_idx(sentences, max_length=None):
     
-    with open("vocab.txt", 'r', encoding='utf8') as f:
-        vocab = []
+    with open("words.txt", 'r', encoding='utf8') as f:
+        words = []
         for line in f:
-            vocab.append(line.strip())
+            words.append(line.strip())
 
-    word_idx = dict((word, i) for i, word in enumerate(vocab)) #create indices from embeddings
+    word_idx = dict((word, i) for i, word in enumerate(words)) #create indices from embeddings
         
     #glove = {w: embs[word_idx[w]] for w in embs.keys()}
     
@@ -128,6 +131,15 @@ def preprocess_to_idx(sentences, max_length=None):
     return train_data_idx
 
 
+def build_words(embs):
+    vocab = []
+    for word, vector in embs.items():
+        vocab.append(word.lower())
+            
+    with open("words.txt", "w", encoding='utf8') as f:
+        for word in vocab:
+            f.write(word + "\n")
+
 def build_vocab(text):
     vocab = []
     for sentence in text:
@@ -139,11 +151,9 @@ def build_vocab(text):
     with open("vocab.txt", "w") as f:
         for word in vocab:
             f.write(word + "\n")
-
-
+#build_words(embs)
 
 #build_vocab(train['reviewText'])
-
 
 def create_weight_matrix(embs):
     '''
