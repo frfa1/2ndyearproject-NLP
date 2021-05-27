@@ -78,11 +78,15 @@ def preprocessing(sentences, embs, max_length=None):
     #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
 
 
-def preprocess_to_idx(sentences, embs, max_length=None):
-
-    word_idx = dict((word, i) for i, word in enumerate(list(embs))) #create indices from embeddings
+def preprocess_to_idx(sentences, max_length=None):
     
-    return word_idx
+    with open("vocab.txt", 'r', encoding='utf8') as f:
+        vocab = []
+        for line in f:
+            vocab.append(line.strip())
+
+    word_idx = dict((word, i) for i, word in enumerate(vocab)) #create indices from embeddings
+        
     #glove = {w: embs[word_idx[w]] for w in embs.keys()}
     
     sent_length = 0
@@ -91,10 +95,10 @@ def preprocess_to_idx(sentences, embs, max_length=None):
         clean_line = word_tokenize(line)                     #tokenize line
         line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
         line_indices = list(map(word_idx.get, line_clean))   #map words to indices
-        line_no_none = list(filter(None, line_indices))      #remove None values
-        if len(line_no_none) > sent_length:
-            sent_length = len(line_no_none)
-        train_data_idx.append(line_no_none)
+        #line_no_none = list(filter(None, line_indices))      #remove None values
+        if len(line_indices) > sent_length:
+            sent_length = len(line_indices)
+        train_data_idx.append(line_indices)
 
     # Padding to longest sentence length -- Or max length variable if defined
     if not max_length:
@@ -108,16 +112,13 @@ def preprocess_to_idx(sentences, embs, max_length=None):
         if len(cleaned_sent) > max_length:
             train_data_idx[idx] = train_data_idx[idx][:max_length]
 
+    return train_data_idx
 
-#import loader
-#train = loader.load_train()
-#embs = get_embs()
-#build vocab
 
 def build_vocab(text):
     vocab = []
     for sentence in text:
-        sentence = word_tokenize(sentence)          # tokenize
+        sentence = word_tokenize(sentence)
         for word in sentence:
             if word.lower() not in vocab:
                 vocab.append(word.lower())
@@ -125,6 +126,8 @@ def build_vocab(text):
     with open("vocab.txt", "w") as f:
         for word in vocab:
             f.write(word + "\n")
+
+
 
 #build_vocab(train['reviewText'])
 
@@ -137,7 +140,7 @@ def create_weight_matrix(embs):
     with open("vocab.txt", 'r', encoding='utf8') as f:
         vocab = []
         for line in f:
-            vocab.append(line)
+            vocab.append(line.strip())
             
     matrix_len = len(vocab)
     weights_matrix = np.zeros((matrix_len, 50))
@@ -167,7 +170,7 @@ def create_emb_layer(weights_matrix, non_trainable=False):
     return emb_layer, num_embeddings, embedding_dim
 
 
-
+'''
 def create_embedding_matrix(word_index, embedding_dict, dimension):
     embedding_matrix = np.zeros((len(word_index)+1, dimension))
 
@@ -184,7 +187,7 @@ def process_embs(text, embs, dimension=50):
     embedding_matrix = create_embedding_matrix(tokenizer.word_index, embedding_dict=embs, dimension=50)
     
     return text_token, embedding_matrix
-
+'''
 
 def binary_y(y):
     """
