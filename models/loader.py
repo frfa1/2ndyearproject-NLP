@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def load_train(drop=True,balance=True,shuffle=True) -> pd.DataFrame:
-    data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/music_reviews_train.json?token=AAAATMWWTTKZQPE6TATZIMLAW5RQI', lines=True)[['reviewText','sentiment']]
+    data = pd.read_json('../data/music_reviews_train.json', lines=True)[['reviewText','sentiment']]
 
     if balance:
         pos = data.loc[data["sentiment"] == "positive"]
@@ -25,23 +25,23 @@ def load_train(drop=True,balance=True,shuffle=True) -> pd.DataFrame:
         return data.fillna('')
 
 def load_train_handcrafted():
-    data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/train_handcrafted.json?token=AAAAWL33WXEDWUYWAQ74Q43AW3FHI')
+    data = pd.read_json('../data/train_handcrafted.json')
     return data
 
 
 def load_dev(drop=True) -> pd.DataFrame:
-    data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/music_reviews_dev.json?token=AAAAWLYHC7D2KFTGTBH6TXDAVYG5O', lines=True)[['reviewText','sentiment']]
+    data = pd.read_json('../data/music_reviews_dev.json', lines=True)[['reviewText','sentiment']]
     if drop:
         return data.dropna().reset_index(drop=True)
     else:
         return data.fillna('')
 
 def load_dev_handcrafted():
-    data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/dev_handcrafted.json?token=AAAAWL4UXHGVLSV4KHWBZB3AW3FPO')
+    data = pd.read_json('../data/dev_handcrafted.json')
     return data
 
 def load_test(drop=True) -> pd.DataFrame:
-    data = pd.read_json('https://github.itu.dk/raw/frph/2ndyearproject/master/data/music_reviews_test_masked.json?token=AAAAWL7FGWYWSROIES2BJZTAVYG6O', lines=True)[['reviewText','sentiment']]
+    data = pd.read_json('../data/music_reviews_test_masked.json', lines=True)[['reviewText','sentiment']]
     if drop:
         return data.dropna().reset_index(drop=True)
     else:
