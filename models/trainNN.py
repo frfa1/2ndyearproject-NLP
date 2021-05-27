@@ -34,7 +34,7 @@ def get_data(sequence_length):
     all_train = TensorDataset(train_x, train_y)
 
     dev = load_dev_handcrafted()
-    dev_text = preprocess_to_idx(dev['reviewText'], embs, max_length=sequence_length)
+    dev_text = preprocess_to_idx(dev['reviewText'], max_length=sequence_length)
     dev_feats = dev.drop(["reviewText", "sentiment"], axis=1)
     dev_x = torch.tensor(np.concatenate((dev_text, dev_feats.values), axis=1))
     dev_y = binary_y(dev["sentiment"])
