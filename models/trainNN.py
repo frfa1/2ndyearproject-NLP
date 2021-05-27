@@ -148,22 +148,23 @@ weight_matrix = create_weight_matrix(embs)
 
 # Define network - Rewrite to grid search
 # input_size = data_shape[2] # Old
-hidden_size = 300
+hidden_size = 50
 num_layers = 2
 
 # Training
 learning_rate = 0.001
 momentum = 0.9
-num_epoch = 5
+num_epoch = 1
 
 print(data_shape)
 
 #### Call training once ####
-#model = sentiNN(hidden_size, num_layers, sequence_length, weight_matrix, ).float()
+model = sentiNN(hidden_size, num_layers, sequence_length, weight_matrix, data_shape[1]-sequence_length).float()
 #(self, hidden_size, num_layers, sequence_length, weight_matrix, use_features:list=None)
-#n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
-#print("Printing epoch scores:")
-#print(epoch_score)
+n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+
+print("EPOCH SCORES")
+print(epoch_score)
 
 #### Grid search ####
 # Things to search for:

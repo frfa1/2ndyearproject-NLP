@@ -15,7 +15,7 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, hidden_size, num_layers, sequence_length, weight_matrix, use_features:list=None): # input_size (Old)
+    def __init__(self, hidden_size, num_layers, sequence_length, weight_matrix, num_features=None): # input_size (Old)
         super(sentiNN, self).__init__()
         
         # Variables / parameters
@@ -23,7 +23,7 @@ class sentiNN(nn.Module):
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.sequence_length = sequence_length
-        self.use_features = use_features
+        self.num_features = num_features
         self.weight_matrix = weight_matrix
         
         # Embedding layer (modified from Christian)
@@ -34,9 +34,9 @@ class sentiNN(nn.Module):
         self.gru = nn.GRU(embedding_dim, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # With emb layer
 
         # Layers features
-        if self.use_features:
-            self.feat_linear = nn.Linear(len(self.use_features), len(self.use_features))
-            self.fc3 = nn.Linear(self.hidden_size * self.sequence_length * 2 + len(use_features), out_features=2)
+        if self.num_features:
+            self.feat_linear = nn.Linear(self.num_features, self.num_features)
+            self.fc3 = nn.Linear(self.hidden_size * self.sequence_length * 2 + self.num_features, out_features=2)
 
         else:
             self.fc3 = nn.Linear(self.hidden_size * self.sequence_length * 2, out_features=2)
@@ -47,10 +47,12 @@ class sentiNN(nn.Module):
     def forward(self, x):        
         # Initialize GRU hidden state
         #h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+
+        print(x.shape)
         
         # Index text and features
-        x_text = x[:, :self.sequence_length, :]
-        x_feat = x[:, self.sequence_length:, :]
+        x_text = x[:, :self.sequence_length] #, :]
+        x_feat = x[:, self.sequence_length] #:, :]
 
         # ------ added from Christian ------- #
         embedded_text = self.embedding(x_text)

@@ -35,6 +35,43 @@ def get_embs(emb="glove_6b"):
         print('loading finished')
         return glove_dict
 
+"""def get_vocab(sentences):
+    vocab = []
+    word_idx = {}
+    indices = 2
+    for sentence in sentences:
+        sentence = word_tokenize(sentence) # Preprocessing step: Tokenize
+        
+
+# Preprocess function
+def new_preprocessing(sentences, max_length=None):
+    cleaned_sentence = []
+    sent_length = 0
+    
+        
+        for idx, word in enumerate(sentence): # Convert each word into embedding or zero vector
+            vocab.append(word.lower())
+            word_idx[word.lower()] = 
+            
+        if len(emb_sent) > sent_length:
+            sent_length = len(emb_sent)
+        cleaned_sentence.append(emb_sent)
+        
+    # Padding to longest sentence length -- Or max length variable if defined
+    if not max_length:
+        max_length = sent_length
+        
+    # Padding to longest sentence length
+    for idx, cleaned_sent in enumerate(cleaned_sentence):
+        if len(cleaned_sent) < max_length:
+            for i in range(max_length - len(cleaned_sent)):
+                cleaned_sent.append(np.zeros((50,)))
+        if len(cleaned_sent) > max_length:
+            cleaned_sentence[idx] = cleaned_sentence[idx][:max_length]
+            
+    return cleaned_sentence
+    #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance"""
+
 # Preprocess function
 def preprocessing(sentences, embs, max_length=None):
     """
