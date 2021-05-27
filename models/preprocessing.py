@@ -90,11 +90,11 @@ def preprocess_to_idx(sentences, max_length=None):
     #glove = {w: embs[word_idx[w]] for w in embs.keys()}
     
     sent_length = 0
-    train_data_idx = list()
+    train_data_idx = []
     for line in sentences:
         clean_line = word_tokenize(line)                     #tokenize line
         line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
-        line_indices = list(map(word_idx.get, line_clean))   #map words to indices
+        line_indices = [map(word_idx.get, line_clean)]   #map words to indices
         #line_no_none = list(filter(None, line_indices))      #remove None values
         if len(line_indices) > sent_length:
             sent_length = len(line_indices)
