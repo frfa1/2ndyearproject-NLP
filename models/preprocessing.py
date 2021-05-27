@@ -30,6 +30,7 @@ def get_embs(emb="glove_6b"):
                 vector = np.asarray(values[1:], "float32")
                 glove_dict[word] = vector
             glove_dict["<PAD>"] = np.zeros((50,))
+            glove_dict["<UNK>"] = np.random.normal(scale=0.6, size=(50, ))
 
         print('loading finished')
         return glove_dict
@@ -77,9 +78,6 @@ def preprocessing(sentences, embs, max_length=None):
     return cleaned_sentence
     #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance
 
-#embs = get_embs()
-#print(embs['the'])
-
 
 def preprocess_to_idx(sentences, max_length=None):
     
@@ -97,7 +95,14 @@ def preprocess_to_idx(sentences, max_length=None):
     for line in sentences:
         clean_line = word_tokenize(line)                     #tokenize line
         line_clean = [word.lower() for word in clean_line]   #concat list to string and make lower
-        line_indices = list(map(word_idx.get, line_clean))   #map words to indices
+        #line_indices = list(map(word_idx.get, line_clean))   #map words to indices
+        line_indices = []
+        for word in line_clean:
+            if word in word_idx:
+                line_indices.append(word_idx[word])
+            else:
+                line_indices.append(len(word_idx))
+        #line_indices = [word_idx[word] for word in line_clean if word in word_idx else len(word_idx)]
         #line_no_none = list(filter(None, line_indices))      #remove None values
         if len(line_indices) > sent_length:
             sent_length = len(line_indices)
@@ -151,6 +156,7 @@ def build_vocab(text):
     with open("vocab.txt", "w") as f:
         for word in vocab:
             f.write(word + "\n")
+#embs = get_embs()
 #build_words(embs)
 
 #build_vocab(train['reviewText'])
