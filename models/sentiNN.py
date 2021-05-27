@@ -70,6 +70,9 @@ class sentiNN(nn.Module):
         out = self.fc3(out)
         
         return out
+
+def main():
+    pass
     
 
 
