@@ -35,42 +35,55 @@ def get_embs(emb="glove_6b"):
         print('loading finished')
         return glove_dict
 
-"""def get_vocab(sentences):
+def get_vocab(sentences):
     vocab = []
     word_idx = {}
-    indices = 2
+    idx_word = {}
+    indices = 0
     for sentence in sentences:
-        sentence = word_tokenize(sentence) # Preprocessing step: Tokenize
-        
+        sentence = word_tokenize(sentence)
+        for word in sentence:
+            w = word.lower()
+            if w not in vocab:
+                vocab.append(w)
+                word_idx[w] = indices
+                idx_word[indices] = w
+                indices += 1
+
+    ## Adding UNK and PAD ##
+    vocab.append("<PAD>")
+    word_idx["<PAD>"] = len(vocab)
+    idx_word[len(vocab)] = "<PAD>"
+    
+    vocab.append("<UNK>")
+    word_idx["<UNK>"] = len(vocab)
+    idx_word[len(vocab)] = "<UNK>"
+    return vocab, word_idx, idx_word
 
 # Preprocess function
-def new_preprocessing(sentences, max_length=None):
+def new_preprocessing(sentences, vocab=None, word_idx=None, idx_word=None, max_length=100):
     cleaned_sentence = []
-    sent_length = 0
-    
+
+    for sentence in sentences:
+        sentence = word_tokenize(sentence)
+        sentence = sentence[:max_length]
+        idx_sent = []
+        for word in sentence:
+            w = word.lower()
+            try:
+                w_idx = word_idx[w]
+            except:
+                w_idx = word_idx["<UNK>"]
+            idx_sent.append(w_idx)
+        cleaned_sentence.append(idx_sent)
         
-        for idx, word in enumerate(sentence): # Convert each word into embedding or zero vector
-            vocab.append(word.lower())
-            word_idx[word.lower()] = 
-            
-        if len(emb_sent) > sent_length:
-            sent_length = len(emb_sent)
-        cleaned_sentence.append(emb_sent)
-        
-    # Padding to longest sentence length -- Or max length variable if defined
-    if not max_length:
-        max_length = sent_length
-        
-    # Padding to longest sentence length
+    # Padding to max sentence length
     for idx, cleaned_sent in enumerate(cleaned_sentence):
         if len(cleaned_sent) < max_length:
             for i in range(max_length - len(cleaned_sent)):
-                cleaned_sent.append(np.zeros((50,)))
-        if len(cleaned_sent) > max_length:
-            cleaned_sentence[idx] = cleaned_sentence[idx][:max_length]
+                cleaned_sent.append(word_idx["<PAD>"])
             
     return cleaned_sentence
-    #return torch.tensor(cleaned_sentence) # a tensor of data. Each index is an instance"""
 
 # Preprocess function
 def preprocessing(sentences, embs, max_length=None):
