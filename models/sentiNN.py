@@ -15,7 +15,7 @@ class sentiNN(nn.Module):
     WITHOUT Features.
     """
     
-    def __init__(self, hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_size, num_features=None): # input_size (Old) weight_matrix
+    def __init__(self, hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_size, emb_dim, num_features=None): # input_size (Old) weight_matrix
         super(sentiNN, self).__init__()
         
         # Variables / parameters
@@ -32,13 +32,13 @@ class sentiNN(nn.Module):
         
         # Embedding layer (modified from Christian)
         #self.embedding, num_embeddings, embedding_dim = create_emb_layer(self.weight_matrix) # pretrained embs
-        self.embedding = nn.Embedding(self.vocab_size, 200) # random embs   
+        self.embedding = nn.Embedding(self.vocab_size, emb_dim) # random embs   
         
         # Layers text
         #self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # Old
         #self.lstm = nn.LSTM(128, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # test lstm
-        self.gru1 = nn.GRU(200, self.hidden_size1, self.num_layers1, batch_first=True, bidirectional=True) # With emb layer
-        self.gru2 = nn.GRU(self.hidden_size1 * 2, self.hidden_size2, self.num_layers2, batch_first=True, bidirectional=True)
+        self.gru1 = nn.GRU(emb_dim, self.hidden_size1, self.num_layers1, batch_first=True, bidirectional=True, dropout=0.2) # With emb layer
+        self.gru2 = nn.GRU(self.hidden_size1 * 2, self.hidden_size2, self.num_layers2, batch_first=True, bidirectional=True, dropout=0.2)
 
         # Layers features
         if self.num_features:

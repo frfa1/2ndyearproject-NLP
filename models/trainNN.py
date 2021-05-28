@@ -75,7 +75,7 @@ def training(model, train_batches, dev_batches, learning_rate, momentum, num_epo
 
             # print statistics
             m = 100 # print every m mini-batches
-            if i % m == 0 and i != 1:    # print every 200 mini-batches
+            if i % m == 0 and i != 0:    # print every 200 mini-batches
                 train_losses.append(running_loss / m) # Append average loss to train_losses
 
                 val_loss, val_acc = validate(dev_batches, model)
@@ -142,6 +142,7 @@ hidden_size1 = 100
 num_layers1 = 2
 hidden_size2 = 80
 num_layers2 = 2
+emb_dim = 400
 #num_features = data_shape[1] - sequence_length
 
 # Training
@@ -150,7 +151,7 @@ momentum = 0.9
 num_epoch = 2
 
 #### Call training once ####
-#model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length=sequence_length, vocab_size=len(vocab), num_features=data_shape[1]).float()
+#model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length=sequence_length, vocab_size=len(vocab), emb_dim, num_features=num_features).float()
 #n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 
 #print("EPOCH SCORES")
