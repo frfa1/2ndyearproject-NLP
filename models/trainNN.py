@@ -134,16 +134,18 @@ def validate(dev_batches, model):
 
 
 sequence_length = 60
-#train_batches, dev_batches, vocab, data_shape = get_data(sequence_length)
+train_batches, dev_batches, vocab, data_shape = get_data(sequence_length)
+
+print('DATA_SHAPE',data_shape)
 
 # Define network - Rewrite to grid search
-# input_size = data_shape[2] # Old
+input_size = data_shape[1] # Old
 hidden_size1 = 100
 num_layers1 = 2
 hidden_size2 = 80
 num_layers2 = 2
 emb_dim = 400
-#num_features = data_shape[1] - sequence_length
+num_features = data_shape[1] - sequence_length
 
 # Training
 learning_rate = 0.001
@@ -151,11 +153,13 @@ momentum = 0.9
 num_epoch = 2
 
 #### Call training once ####
-#model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length=sequence_length, vocab_size=len(vocab), emb_dim, num_features=num_features).float()
-#n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=num_features).float()
+n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 
-#print("EPOCH SCORES")
-#print(epoch_score)
+print("EPOCH SCORES")
+print(epoch_score)
+
+"""
 
 #### Grid search ####
 # Things to search for:
@@ -163,7 +167,7 @@ learning_rates = [0.001, 0.0001]
 hidden_sizes = [50, 100, 300]
 # Note: Epochs are also searched, but each step is stored in training
 
-"""# Keeping scores:
+# Keeping scores:
 grid_scores = {}
 grid_scores["lr"] = 0
 grid_scores["hs"] = 0
@@ -188,8 +192,8 @@ for i in learning_rates:
                 grid_scores["best_model"] = n_model
                 grid_scores["epoch_score"] = epoch_score
           
-#### End Grid search ####"""
-
+#### End Grid search ####
+"""
 #joblib.dump(grid_scores["best_model"], "trained_models/nn_baseline.joblib")
 
 
