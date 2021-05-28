@@ -19,7 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def get_data(sequence_length):
 
     # Get pretrained embeddings
-    embs = get_embs("glove_6b")
+    #embs = get_embs("glove_6b")
  
     ### New ###
     train = load_train_handcrafted()
@@ -133,21 +133,21 @@ def validate(dev_batches, model):
     return mean_val_loss, mean_val_accuracy 
 
 
-sequence_length = 50
+sequence_length = 60
 #train_batches, dev_batches, vocab, data_shape = get_data(sequence_length)
 
 # Define network - Rewrite to grid search
 # input_size = data_shape[2] # Old
-hidden_size1 = 50
-num_layers1 = 5
-hidden_size2 = 20
+hidden_size1 = 100
+num_layers1 = 2
+hidden_size2 = 80
 num_layers2 = 2
-num_features = data_shape[1] - sequence_length
+#num_features = data_shape[1] - sequence_length
 
 # Training
 learning_rate = 0.001
 momentum = 0.9
-num_epoch = 1
+num_epoch = 2
 
 #### Call training once ####
 #model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length=sequence_length, vocab_size=len(vocab), num_features=data_shape[1]).float()

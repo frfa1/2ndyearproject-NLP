@@ -39,7 +39,7 @@ def get_vocab(sentences):
     vocab = []
     word_idx = {}
     idx_word = {}
-    indices = 0
+    indices = 1
     for sentence in sentences:
         sentence = word_tokenize(sentence)
         for word in sentence:
@@ -54,7 +54,7 @@ def get_vocab(sentences):
     vocab.append("<PAD>")
     word_idx["<PAD>"] = len(vocab)
     idx_word[len(vocab)] = "<PAD>"
-    
+
     vocab.append("<UNK>")
     word_idx["<UNK>"] = len(vocab)
     idx_word[len(vocab)] = "<UNK>"
