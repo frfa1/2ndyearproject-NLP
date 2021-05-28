@@ -23,19 +23,20 @@ def get_data(sequence_length):
  
     ### New ###
     train = load_train_handcrafted()
+    dev = load_dev_handcrafted()
     vocab, word_idx, idx_word = get_vocab(train['reviewText']) # Get vocab etc from train
 
     train_text = new_preprocessing(train['reviewText'], vocab, word_idx, idx_word, max_length=sequence_length)
     train_feats = train.drop(["reviewText", "sentiment"], axis=1)
-    X = np.concatenate((train_text, train_feats.values), axis=1)
-    train_x = torch.tensor(X)
+    train_conc = np.concatenate((train_text, train_feats.values), axis=1)
+    train_x = torch.tensor(train_conc)
     train_y = binary_y(train["sentiment"])
     all_train = TensorDataset(train_x, train_y)
 
-    dev = load_dev_handcrafted()
     dev_text = new_preprocessing(dev['reviewText'], vocab, word_idx, idx_word, max_length=sequence_length)
     dev_feats = dev.drop(["reviewText", "sentiment"], axis=1)
-    dev_x = torch.tensor(np.concatenate((dev_text, dev_feats.values), axis=1))
+    dev_conc = np.concatenate((dev_text, dev_feats.values), axis=1)
+    dev_x = torch.tensor(dev_conc)
     dev_y = binary_y(dev["sentiment"])
     all_dev = TensorDataset(dev_x, dev_y)
 
@@ -46,7 +47,7 @@ def get_data(sequence_length):
     train_batches = DataLoader(all_train, batch_size=batch_size)
     dev_batches = DataLoader(all_dev, batch_size=batch_size)
 
-    return train_batches, dev_batches, vocab, X.shape
+    return train_batches, dev_batches, vocab, train_conc.shape
 
 
 def training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch):
@@ -74,7 +75,7 @@ def training(model, train_batches, dev_batches, learning_rate, momentum, num_epo
             running_loss += loss.item() # append loss
 
             # print statistics
-            m = 100 # print every m mini-batches
+            m = 500 # print every m mini-batches
             if i % m == 0 and i != 0:    # print every 200 mini-batches
                 train_losses.append(running_loss / m) # Append average loss to train_losses
 
@@ -99,9 +100,11 @@ def training(model, train_batches, dev_batches, learning_rate, momentum, num_epo
         avg_train_loss = avg_train_loss / len(train_losses)
         avg_val_loss = avg_val_loss / len(val_losses)
         avg_val_acc = avg_val_acc / len(val_accuracies)
-        epoch_score.append([avg_train_loss, avg_val_loss, avg_val_acc])
+        epoch_score.append([epoch+1, avg_train_loss, avg_val_loss, avg_val_acc])
 
-    return model, epoch_score
+    epoch_score_df = pd.DataFrame(epoch_score, columns=["epoch", "train_loss", "val_loss", "val_accuracy"])
+
+    return model, epoch_score_df
 
 
 def validate(dev_batches, model):       
@@ -133,31 +136,36 @@ def validate(dev_batches, model):
     return mean_val_loss, mean_val_accuracy 
 
 
-sequence_length = 60
-train_batches, dev_batches, vocab, data_shape = get_data(sequence_length)
-
-print('DATA_SHAPE',data_shape)
-
-# Define network - Rewrite to grid search
-input_size = data_shape[1] # Old
-hidden_size1 = 100
-num_layers1 = 2
-hidden_size2 = 80
-num_layers2 = 2
-emb_dim = 400
-num_features = data_shape[1] - sequence_length
-
-# Training
-learning_rate = 0.001
-momentum = 0.9
-num_epoch = 2
-
 #### Call training once ####
-model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=num_features).float()
-n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+#model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=num_features).float()
+#n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
 
-print("EPOCH SCORES")
-print(epoch_score)
+
+#### Ablation study ####
+
+def ablation_study():
+
+    print("INITIALIZING ABLATION STUDY")
+
+    ablation_scores = [0 for featz in range(num_features)]
+
+    for i in range(num_features):
+        temp_num_features = num_features - i
+
+        print("Running with", temp_num_features, "features...")
+        
+        if temp_num_features != 0:
+            model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=temp_num_features).float()
+        else:
+            model = sentiNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim).float()
+        n_model, epoch_score = training(model, train_batches, dev_batches, learning_rate, momentum, num_epoch)
+
+        ablation_scores[temp_num_features] = (n_model, epoch_score)
+    
+    return ablation_scores
+
+#### End Ablation study ####
+
 
 """
 
@@ -198,7 +206,26 @@ for i in learning_rates:
 
 
 def main():
-    pass
+    sequence_length = 60
+    train_batches, dev_batches, vocab, data_shape = get_data(sequence_length)
+
+    # Define network - Rewrite to grid search
+    #input_size = data_shape[1] # Old
+    hidden_size1 = 100
+    num_layers1 = 2
+    hidden_size2 = 80
+    num_layers2 = 2
+    emb_dim = 400
+    num_features = data_shape[1] - sequence_length
+
+    # Training
+    learning_rate = 0.001
+    momentum = 0.9
+    num_epoch = 1
+
+    ablation_scores = ablation_study()
+
+    return ablation_scores
 
 if __name__ == '__main__':
     main()

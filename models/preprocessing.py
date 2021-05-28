@@ -36,6 +36,7 @@ def get_embs(emb="glove_6b"):
         return glove_dict
 
 def get_vocab(sentences):
+    print("Making vocab...")
     vocab = []
     word_idx = {}
     idx_word = {}
@@ -58,10 +59,15 @@ def get_vocab(sentences):
     vocab.append("<UNK>")
     word_idx["<UNK>"] = len(vocab)
     idx_word[len(vocab)] = "<UNK>"
+
+    print("Vocab made!")
+
     return vocab, word_idx, idx_word
 
 # Preprocess function
 def new_preprocessing(sentences, vocab=None, word_idx=None, idx_word=None, max_length=100):
+    print("Preprocessing texts...")
+
     cleaned_sentence = []
 
     for sentence in sentences:
@@ -83,6 +89,7 @@ def new_preprocessing(sentences, vocab=None, word_idx=None, idx_word=None, max_l
             for i in range(max_length - len(cleaned_sent)):
                 cleaned_sent.append(word_idx["<PAD>"])
             
+    print("Done preprocessing texts!")
     return cleaned_sentence
 
 # Preprocess function
@@ -275,9 +282,11 @@ def binary_y(y):
     
     for i in range(len(y)):
         if y[i] == "positive":
-            y[i] = 1
+            #y[i] = 1
+            y.loc[i] = 1
         if y[i] == "negative":
-            y[i] = 0
+            #y[i] = 0
+            y.loc[i] = 0
             
     return torch.tensor(y)
 

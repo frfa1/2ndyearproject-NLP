@@ -32,7 +32,7 @@ class sentiNN(nn.Module):
         
         # Embedding layer (modified from Christian)
         #self.embedding, num_embeddings, embedding_dim = create_emb_layer(self.weight_matrix) # pretrained embs
-        self.embedding = nn.Embedding(self.vocab_size, emb_dim) # random embs   
+        self.embedding = nn.Embedding(self.vocab_size+1, emb_dim) # random embs   
         
         # Layers text
         #self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True, bidirectional=True) # Old
