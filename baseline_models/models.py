@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sys import argv
 from loader import load_train, load_dev
 
@@ -32,6 +32,9 @@ class LogisticRegressionBOW:
         out = [0 if item == 'negative' else 1 for item in predictions]
         df = pd.DataFrame(out, columns=['prediction'])
         df.to_csv('LogisticRegressionPredictions.csv',index_label='id')
+
+    def report(self, text: pd.Series, labels: pd.Series):
+        return classification_report(labels, self.predict(text),digits=3)
 
 
     
