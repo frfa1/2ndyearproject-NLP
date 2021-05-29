@@ -17,7 +17,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def get_data(train,dev,test,max_sequence_length,dump=False):
     print('Initializing preprocessing...')
-
     vocab, word_idx, idx_word = get_vocab(train['reviewText']) # Get vocab etc from train
 
     train_text = new_preprocessing(train['reviewText'], vocab, word_idx, idx_word, max_length=max_sequence_length)
@@ -41,15 +40,10 @@ def get_data(train,dev,test,max_sequence_length,dump=False):
     test_y = binary_y(test['sentiment'])
     all_test = TensorDataset(test_x,test_y)
 
-    
-
     # Batching the data
     batch_size = 50
     train_batches = DataLoader(all_train, batch_size=batch_size)
     dev_batches = DataLoader(all_dev, batch_size=batch_size)
-
-    
-
     if dump:
         print('\tMaking pickles...')
         with open('pickles/train_batches.pickle', 'wb') as f:
@@ -66,12 +60,24 @@ def get_data(train,dev,test,max_sequence_length,dump=False):
             pickle.dump(test_x, f, pickle.HIGHEST_PROTOCOL)
         with open('pickles/test_y.pickle', 'wb') as f:
             pickle.dump(test_y, f, pickle.HIGHEST_PROTOCOL)
-
     print("Preprocessing completed!")
-
     return train_batches, dev_batches, vocab, train_conc.shape, test_x,test_y
 
 
+def load_pickled():
+    with open('pickles/train_batches.pickle', 'rb') as f:
+        train_batches = pickle.load(f)
+    with open('pickles/dev_batches.pickle', 'rb') as f:
+        dev_batches = pickle.load(f) 
+    with open('pickles/vocab.pickle', 'rb') as f:
+        vocab = pickle.load(f)
+    with open('pickles/train_conc_shape.pickle', 'rb') as f:
+        data_shape = pickle.load(f)
+    with open('pickles/test_X.pickle', 'rb') as f:
+        test_X = pickle.load(f)
+    with open('pickles/test_y.pickle', 'rb') as f:
+        test_y = pickle.load(f)
+    return train_batches,dev_batches,vocab,data_shape,test_X,test_y
 
 
 class RNN(nn.Module):
@@ -128,10 +134,13 @@ class RNN(nn.Module):
 
         return out
 
-def runNN(train,dev,test,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, emb_dim,n_features=None):
-    train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length)
-    net = RNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
 
+
+
+
+def runNN(train_batches,dev_batches,vocab,data_shape,test_X,test_y,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, emb_dim,n_features=None,use_dump=False):
+    net = RNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
+    
 
 def main():
     train = load_train()
@@ -139,6 +148,13 @@ def main():
     test = load_movies()
 
     sequence_length = 60 # pickles currently at 60
+
+    make_data = False
+    if make_data:
+        train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length,dump=True)
+    else:
+        train_batches, dev_batches, vocab, data_shape, test_X,test_y = load_pickled()
+    
     hidden_size1 = 100
     num_layers1 = 2
     hidden_size2 = 80
@@ -150,8 +166,7 @@ def main():
     momentum = 0.9
     num_epoch = 1
 
-    train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length,dump=True)
-    #runNN(train,dev,test,hidden_size1,hidden_size2,num_layers1,num_layers2,sequence_length,emb_dim,num_features)
+    runNN(train_batches, dev_batches, vocab, data_shape, test_X,test_y,hidden_size1,hidden_size2,num_layers1,num_layers2,sequence_length,emb_dim,num_features)
     
 
 if __name__ == '__main__':
