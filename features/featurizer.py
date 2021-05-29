@@ -1,15 +1,9 @@
-import makeElongatedFeature
-import makeEmoticonFeature
-import makeIrrealisFeature
-import makeLengthsFeature
-import makeNegationFeature
-import makePunctuationsFeature
-import makeShoutcaseFeature
-import makeNegatedNeg
-import makeNegatedPos
-import makeNegationDiscourse
-import loader
 import pandas as pd
+from scipy.sparse import data
+from handcrafted import *
+import loader
+from sklearn.preprocessing import StandardScaler
+from sklearn_pandas import DataFrameMapper
 from datetime import datetime
 
 """
@@ -34,28 +28,26 @@ def write_error_log(features: dict) -> None:
         for key,val in features.items():
             f.write(''.join([key,' has ',str(len(val)),' observations\n']))
 
-def make_all(docs, labels, use_all=True, error_info=False, export=False, export_name=None):
+def make_all(docs,labels, scale=True,keep_text=True, error_info=False, export=False, export_name=None):
     """
     Feed docs and labels as pd.Series objects from a pd.DataFrame and remember to run the
     pd.DataFrame.reset_index(drop=True) method on the dataframe before feeding it to this function!
+    - but if you use the loader, this is already done :) 
     """
     features = {}
-  #  features['elongated_count'] = makeElongatedFeature.create(docs,mode='count')
-   # features['elongated_binary'] = makeElongatedFeature.create(docs,mode='binary')
-   # features['n_emoticons'] = makeEmoticonFeature.EmoticonSentiment(docs)
-   # features['irrealis_count'] = makeIrrealisFeature.create(docs,mode='count')
-    #features['irrealis_binary'] = makeIrrealisFeature.create(docs,mode='binary')
-    #features['avg_review_length'] = makeLengthsFeature.get_review_length(docs)
-    #features['avg_word_length'] = makeLengthsFeature.get_avg_word_length(docs)
-    #features['negation_count'] = makeNegationFeature.create(docs,mode='count')
-    features['negation_binary'] = makeNegationFeature.create(docs,mode='binary')
-    #features['exclamation_mark_count'] = makePunctuationsFeature.get_exclamation_marks(docs)
-    #features['question_mark_count'] = makePunctuationsFeature.get_question_marks(docs)
-    #features['shoutcase_count'] = makeShoutcaseFeature.ShoutcaseCounter(docs)
-    features['negated_positive'] = makeNegatedPos.create(docs)
-    features['negated_negative'] = makeNegatedNeg.create(docs)
-    features['negation_first_half'] = makeNegationDiscourse.create(docs)[0]
-    features['negation_second_half'] = makeNegationDiscourse.create(docs)[1]
+    features['elongated_words_are_present'] = create_elongated(docs,mode='binary')
+    features['irrealis_words_are_present'] = create_irrealis(docs,mode='binary')
+    features['num_words'] = create_review_length(docs)
+    features['avg_word_length'] = create_avg_word_length(docs)
+    features['negation_is_present'] = create_negations_present(docs,mode='binary')
+    features['num_negations'] = create_negations_present(docs,mode='count')
+    features['negation_density'] = create_negation_density(docs)
+    features['negated_positive'] = create_negated_positives(docs)
+    features['negated_negative'] = create_negated_negatives(docs)
+    features['negation_in_first_half'] = create_negation_discourse(docs)[0]
+    features['negation_in_second_half'] = create_negation_discourse(docs)[1]
+    features['num_exclamation_marks'] = create_exclamation_marks(docs)
+    features['num_question_marks'] = create_question_marks(docs)
 
 
     if not validate_features(features):
@@ -63,27 +55,47 @@ def make_all(docs, labels, use_all=True, error_info=False, export=False, export_
             write_error_log(features)
         raise ValueError('Inconsistent number of observations in features.')
 
-    if use_all:
+
+    if keep_text:
         dataframes = [docs]
-        for feature_name,values in features.items():
-            dataframes.append(pd.DataFrame(data=values,columns=[feature_name]))
+    else:
+        dataframes = []
+    
+    tmp = []
+    for feature_name,values in features.items():
+        tmp.append(pd.DataFrame(data=values,columns=[feature_name]))
+    just_features = pd.concat(tmp,axis=1)
+
+
+    if scale:
+        mapper = DataFrameMapper([(just_features.columns, StandardScaler())])
+        scaled_features = mapper.fit_transform(just_features.copy(), 4)
+        scaled_features_df = pd.DataFrame(scaled_features, index=just_features.index, columns=just_features.columns)
+        if keep_text:
+            final = pd.concat([docs,scaled_features_df,labels],axis=1) 
+        else:
+            final = pd.concat([scaled_features_df,labels],axis=1)
+
+    else:
+        dataframes.extend(tmp)
         dataframes.append(labels)
-        final = pd.concat(dataframes, axis=1)
-        if export:
-            if not export_name:
-                path = '../data/'+safe_filename()+'.json'
-                final.to_json(path)
-            else:
-                final.to_json(export_name)
-        return final
+        final = pd.concat(dataframes,axis=1)
+    if export:
+        if not export_name:
+            path = '../data/'+safe_filename()+'.json'
+            final.to_json(path)
+        else:
+            final.to_json('../data/'+export_name+'.json')
+    return final
+
 
 
 def main():
-    dataset = loader.load_dev()
-    features,labels = dataset['reviewText'], dataset['sentiment']
-    data = make_all(features,labels,export=True,export_name='../data/dev_handcrafted.json')
+    dev = loader.load_dev()
+    tmp = make_all(dev['reviewText'],dev['sentiment'],scale=True,keep_text=True,export=True,export_name='test1')
 
-    print(data)
+    test = pd.read_json('../data/test1.json')
+    print(test)
 
 if __name__ == '__main__':
     main()
