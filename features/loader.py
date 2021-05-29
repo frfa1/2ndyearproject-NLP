@@ -106,6 +106,10 @@ def load_test_handcrafted():
     data = pd.read_json('../data/test_handcrafted.json')
     return data
 
+def load_hard_handcrafted():
+    data = pd.read_json('../data/hard_handcrafted.json')
+    return data
+
 def load_movies_handcrafted():
     data = pd.read_json('../data/movies_handcrafted.json')
     return data
@@ -123,9 +127,10 @@ def main():
         train_handcrafted = load_train_handcrafted()
         dev_handcrafted = load_dev_handcrafted()
         test_handcrafted = load_test_handcrafted()
+        hard_handcrafted = load_hard_handcrafted()
         movies_handcrafted = load_movies_handcrafted()
 
-        all_sets = [train,dev,test,hard,movies,train_handcrafted,dev_handcrafted,test_handcrafted,movies_handcrafted]
+        all_sets = [train,dev,test,hard,movies,train_handcrafted,dev_handcrafted,test_handcrafted,hard_handcrafted,movies_handcrafted]
 
         if 'print' in argv:
             for dataset in all_sets:
