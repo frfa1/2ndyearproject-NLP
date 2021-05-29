@@ -10,11 +10,12 @@ from torch.utils.data import DataLoader, TensorDataset
 from preprocessing import get_vocab, binary_y, new_preprocessing
 from loader import load_train, load_dev, load_movies
 
+import pickle
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def get_data(train,dev,test,max_sequence_length):
+def get_data(train,dev,test,max_sequence_length,dump=False):
     print('Initializing preprocessing...')
 
     vocab, word_idx, idx_word = get_vocab(train['reviewText']) # Get vocab etc from train
@@ -47,6 +48,25 @@ def get_data(train,dev,test,max_sequence_length):
     train_batches = DataLoader(all_train, batch_size=batch_size)
     dev_batches = DataLoader(all_dev, batch_size=batch_size)
 
+    
+
+    if dump:
+        print('\tMaking pickles...')
+        with open('pickles/train_batches.pickle', 'wb') as f:
+            pickle.dump(train_batches, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/dev_batches.pickle', 'wb') as f:
+            pickle.dump(dev_batches, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/vocab.pickle', 'wb') as f:
+            pickle.dump(vocab, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/train_conc_shape.pickle', 'wb') as f:
+            pickle.dump(train_conc.shape, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/train_conc_shape.pickle', 'wb') as f:
+            pickle.dump(train_conc.shape, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/test_X.pickle', 'wb') as f:
+            pickle.dump(test_x, f, pickle.HIGHEST_PROTOCOL)
+        with open('pickles/test_y.pickle', 'wb') as f:
+            pickle.dump(test_y, f, pickle.HIGHEST_PROTOCOL)
+
     print("Preprocessing completed!")
 
     return train_batches, dev_batches, vocab, train_conc.shape, test_x,test_y
@@ -56,7 +76,7 @@ def get_data(train,dev,test,max_sequence_length):
 
 class RNN(nn.Module):
     def __init__(self, hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_size, emb_dim, num_features=None): # input_size (Old) weight_matrix
-        super(sentiNN, self).__init__()
+        super(RNN, self).__init__()
 
         self.hidden_size1 = hidden_size1
         self.hidden_size2 = hidden_size2
@@ -108,9 +128,9 @@ class RNN(nn.Module):
 
         return out
 
-def runNN(train,dev,test,max_sequence_length,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_len, emb_dim,n_features=None):
-    train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,max_sequence_length)
-    net = RNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_len, emb_dim, num_features=n_features).float()
+def runNN(train,dev,test,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, emb_dim,n_features=None):
+    train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length)
+    net = RNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
 
 
 def main():
@@ -118,7 +138,7 @@ def main():
     dev = load_dev()
     test = load_movies()
 
-    sequence_length = 60
+    sequence_length = 60 # pickles currently at 60
     hidden_size1 = 100
     num_layers1 = 2
     hidden_size2 = 80
@@ -126,6 +146,12 @@ def main():
     emb_dim = 400
     num_features = 0 # can be between 0 and 13
 
+    learning_rate = 0.001
+    momentum = 0.9
+    num_epoch = 1
+
+    train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length,dump=True)
+    #runNN(train,dev,test,hidden_size1,hidden_size2,num_layers1,num_layers2,sequence_length,emb_dim,num_features)
     
 
 if __name__ == '__main__':
