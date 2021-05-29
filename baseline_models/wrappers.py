@@ -13,8 +13,8 @@ def run_logistic(train_features,train_labels,test_features,test_labels=None,retu
 
 def main():
     train = load_train(balance=True)
-    dev = load_dev()
-    dev_hard = load_hard()
+    dev = load_dev(balance=True)
+    dev_hard = load_hard(balance=True)
     movies = load_movies()
     print('Logistic regression trained on BOW of balanced music reviews train, tested on balanced BOW of music reviews dev:\n')
     run_logistic(train['reviewText'],train['sentiment'],dev['reviewText'],test_labels=dev['sentiment'])
