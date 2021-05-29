@@ -92,7 +92,7 @@ def make_all(docs,labels, scale=True,keep_text=True, error_info=False, export=Fa
 
 
 def main():
-    dev = loader.load_train()
+    dev = loader.load_test()
 
     if 'ut' in argv:
 
@@ -101,7 +101,7 @@ def main():
 
         print(tmp)
 
-    make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='train_handcrafted')
+    #make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='test_handcrafted')
 
 if __name__ == '__main__':
     main()
