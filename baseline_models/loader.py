@@ -106,6 +106,10 @@ def load_test_handcrafted():
     data = pd.read_json('../data/test_handcrafted.json')
     return data
 
+def load_hard_handcrafted():
+    data = pd.read_json('../data/hard_handcrafted.json')
+    return data
+
 def load_movies_handcrafted():
     data = pd.read_json('../data/movies_handcrafted.json')
     return data
