@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 import torch
 import torch.nn as nn
@@ -81,8 +81,11 @@ def load_pickled():
 
 
 class RNN(nn.Module):
-    def __init__(self, hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_size, emb_dim, num_features=None): # input_size (Old) weight_matrix
+    def __init__(self, train_batches,dev_batches,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, vocab_size, emb_dim, num_features=None): # input_size (Old) weight_matrix
         super(RNN, self).__init__()
+
+        self.train_batches = train_batches
+        self.dev_batches = dev_batches
 
         self.hidden_size1 = hidden_size1
         self.hidden_size2 = hidden_size2
@@ -134,27 +137,141 @@ class RNN(nn.Module):
 
         return out
 
+    def learn(self, learning_rate, momentum, num_epoch,save_model):
+        # Loss function
+        criterion = self.loss
+        optimizer = optim.SGD(self.parameters(), lr=learning_rate, momentum=momentum)
+
+        epoch_score = []
+
+        # Actual training
+        for epoch in range(num_epoch):  # loop over the dataset multiple times
+
+            train_losses = [] # List of losses on train set
+            val_losses = [] # List of losses on dev set
+            val_accuracies = [] # List of accuracies on dev set
+
+            running_loss = 0.0
+            for i, data in enumerate(self.train_batches, 0): # Iterates through each batch
+                inputs, labels = data # get the inputs; data is a list of [inputs, labels]
+                optimizer.zero_grad() # zero the parameter gradients
+                outputs = self(inputs.float()) # forward + backward + optimize
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+                running_loss += loss.item() # append loss
+
+                # print statistics
+                m = 100 # print every m mini-batches
+                if i % m == 0 and i != 0:    # print every 200 mini-batches
+                    train_losses.append(running_loss / m) # Append average loss to train_losses
+
+                    val_loss, val_acc = self._validate()
+                    val_losses.append(val_loss) # Append loss on whole validation set of this iteration
+                    val_accuracies.append(val_acc) # Same but for val accuracy
+                    self.train() # Go back to training state
+
+                    print('[%d, %5d] Training loss: %.3f | Validation loss: %.3f | Validation accuracy: %.1f' 
+                        %(epoch + 1, i + 1, running_loss / m, val_loss, val_acc)) # Just some user interface
+
+                    running_loss = 0.0
+
+            # Average loss and accuracy for the epoch:
+            avg_train_loss = 0
+            avg_val_loss = 0
+            avg_val_acc = 0
+            for j in range(len(train_losses)):
+                avg_train_loss += train_losses[j]
+                avg_val_loss += val_losses[j]
+                avg_val_acc += val_accuracies[j]
+            avg_train_loss = avg_train_loss / len(train_losses)
+            avg_val_loss = avg_val_loss / len(val_losses)
+            avg_val_acc = avg_val_acc / len(val_accuracies)
+            epoch_score.append([epoch+1, avg_train_loss, avg_val_loss, avg_val_acc])
+
+        epoch_score_df = pd.DataFrame(epoch_score, columns=["epoch", "train_loss", "val_loss", "val_accuracy"])
+
+        if save_model:
+            with open('pickles/trainedNNvanilla.pickle', 'wb') as f:
+                pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        return epoch_score_df
+
+
+    def _validate(self):       
+        criterion = self.loss # Get the loss function from the model class               
+        correct = 0                                               
+        total, total2 = 0, 0                                               
+        running_loss = 0.0                                        
+        self.eval() # Go to evaluation state                                
+        with torch.no_grad():                                     
+            for i, data in enumerate(self.dev_batches):                     
+                inputs, labels = data 
+                #inputs, labels = inputs.float(), labels.float()  # Added. Maybe change to "device" later                   
+                #inputs = inputs.to(device)                        
+                #labels = labels.to(device)    
+
+                # Get the val loss                                        
+                outputs = self(inputs.float())                           
+                loss = criterion(outputs, labels)                    
+                running_loss += loss.item()  
+                total += 1  
+                
+                # Get the val accuracy
+                total2 += labels.size(0)
+                _, predicted = torch.max(outputs.data, 1)  # Get the max value of each row, i.e. predicted                                  
+                correct += (predicted == labels).sum().item()       
+        mean_val_accuracy = 100 * correct / total2           
+        mean_val_loss = running_loss / total
+
+        return mean_val_loss, mean_val_accuracy 
 
 
 
+def runNN(
+        train_batches,
+        dev_batches,
+        vocab: dict,
+        data_shape,
+        test_X,
+        test_y,
+        hidden_size1: int, 
+        hidden_size2: int, 
+        num_layers1: int, 
+        num_layers2: int, 
+        sequence_length: int, 
+        emb_dim: int,
+        learning_rate: float,
+        momentum: int,
+        num_epochs: int,
+        n_features=None,
+        dump_trained=False,
+        use_trained=False
+    ):
+    if not use_trained:
+        print('Initialising NN...')
+        net = RNN(train_batches,dev_batches,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
+        print(net.learn(learning_rate,momentum,num_epochs,dump_trained))
+    if use_trained:
+        with open('pickles/trainedNN.pickle', 'rb') as f:
+            net = pickle.load(f)
 
-def runNN(train_batches,dev_batches,vocab,data_shape,test_X,test_y,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, emb_dim,n_features=None,use_dump=False):
-    net = RNN(hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
-    
+
 
 def main():
     train = load_train()
     dev = load_dev()
     test = load_movies()
 
-    sequence_length = 60 # pickles currently at 60
-
+    sequence_length = 60 # pickles currently at 60, if you change, then set make_data to True
     make_data = False
+
     if make_data:
         train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length,dump=True)
     else:
+        print('Loading pickles...')
         train_batches, dev_batches, vocab, data_shape, test_X,test_y = load_pickled()
     
+    # the below variables can be changed as you like
     hidden_size1 = 100
     num_layers1 = 2
     hidden_size2 = 80
@@ -164,9 +281,27 @@ def main():
 
     learning_rate = 0.001
     momentum = 0.9
-    num_epoch = 1
+    num_epochs = 1
 
-    runNN(train_batches, dev_batches, vocab, data_shape, test_X,test_y,hidden_size1,hidden_size2,num_layers1,num_layers2,sequence_length,emb_dim,num_features)
+    runNN(
+        train_batches, 
+        dev_batches, 
+        vocab, 
+        data_shape, 
+        test_X,
+        test_y,
+        hidden_size1,
+        hidden_size2,
+        num_layers1,
+        num_layers2,
+        sequence_length,
+        emb_dim,
+        learning_rate,
+        momentum,
+        num_epochs,
+        num_features,
+        dump_trained=True
+    )
     
 
 if __name__ == '__main__':
