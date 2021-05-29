@@ -5,6 +5,7 @@ import loader
 from sklearn.preprocessing import StandardScaler
 from sklearn_pandas import DataFrameMapper
 from datetime import datetime
+from sys import argv
 
 """
 The featurizer library enables the creation of our handcrafted features from any dataset that contains 
@@ -91,11 +92,16 @@ def make_all(docs,labels, scale=True,keep_text=True, error_info=False, export=Fa
 
 
 def main():
-    dev = loader.load_dev()
-    tmp = make_all(dev['reviewText'],dev['sentiment'],scale=True,keep_text=True,export=True,export_name='test1')
+    dev = loader.load_train()
 
-    test = pd.read_json('../data/test1.json')
-    print(test)
+    if 'ut' in argv:
+
+    
+        tmp = make_all(dev['reviewText'],dev['sentiment'],scale=True,keep_text=True,export=False)
+
+        print(tmp)
+
+    make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='train_handcrafted')
 
 if __name__ == '__main__':
     main()
