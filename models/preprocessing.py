@@ -290,6 +290,9 @@ def binary_y(y):
             
     return torch.tensor(y)
 
+def main():
+    pass
+
 
 if __name__ == '__main__':
     main()
