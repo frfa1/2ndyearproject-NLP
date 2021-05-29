@@ -7,6 +7,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 
+from sklearn.metrics import accuracy_score,classification_report
+
 from preprocessing import get_vocab, binary_y, new_preprocessing
 from loader import load_train, load_dev, load_movies
 
@@ -124,7 +126,6 @@ class RNN(nn.Module):
         embedded_text = self.embedding(x_text)
 
         # Forward text
-        #out, _ = self.lstm(embedded_text) # test lstm
         out, _ = self.gru1(embedded_text)
         out, _ = self.gru2(out)
         out = out.reshape(out.shape[0], -1)
@@ -206,9 +207,6 @@ class RNN(nn.Module):
         with torch.no_grad():                                     
             for i, data in enumerate(self.dev_batches):                     
                 inputs, labels = data 
-                #inputs, labels = inputs.float(), labels.float()  # Added. Maybe change to "device" later                   
-                #inputs = inputs.to(device)                        
-                #labels = labels.to(device)    
 
                 # Get the val loss                                        
                 outputs = self(inputs.float())                           
@@ -225,6 +223,14 @@ class RNN(nn.Module):
 
         return mean_val_loss, mean_val_accuracy 
 
+    def predict(self,features,labels=None):
+        self.eval()
+        test_predictions = self(features)
+        _, predicted = torch.max(test_predictions,1)
+
+        if labels:
+            print(classification_report(labels,predicted))
+        return predicted
 
 
 def runNN(
@@ -254,6 +260,8 @@ def runNN(
     if use_trained:
         with open('pickles/trainedNN.pickle', 'rb') as f:
             net = pickle.load(f)
+
+    y_pred = net.predict(test_X,labels=test_y)
 
 
 
