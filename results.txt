@@ -20,3 +20,15 @@ Logistic regression trained on balanced BOW of music reviews train, tested on ba
     accuracy                          0.585      4306
    macro avg      0.581     0.581     0.581      4306
 weighted avg      0.585     0.585     0.585      4306
+
+
+Logistic regression trained on balanced BOW of music reviews train, tested on balanced BOW of movie reviews:
+
+              precision    recall  f1-score   support
+
+    negative      0.760     0.902     0.825     25000
+    positive      0.879     0.715     0.788     25000
+
+    accuracy                          0.808     50000
+   macro avg      0.819     0.808     0.806     50000
+weighted avg      0.819     0.808     0.806     50000
