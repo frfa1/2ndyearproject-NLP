@@ -116,16 +116,29 @@ def load_hard(drop=True,balance=False):
     else:
         return data.fillna('')
 
+def load_movies(drop=True):
+    """
+    Movie review dataset - already balanced
+    """
+    
+    data = pd.read_json('../data/target_data.json')[['reviewText','sentiment']] 
+    if drop:
+        return data.dropna().reset_index(drop=True)
+    else:
+        return data.fillna('')
+
+
 def main():
     train = load_train()
     dev = load_dev()
     test = load_test()
     hard = load_hard()
+    movies = load_movies()
 
     train_handcrafted = load_train_handcrafted()
     dev_handcrafted = load_dev_handcrafted()
 
-    print(hard)
+    print(movies)
 
 if __name__ == '__main__':
     main()
