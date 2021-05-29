@@ -138,7 +138,6 @@ def main():
     train_handcrafted = load_train_handcrafted()
     dev_handcrafted = load_dev_handcrafted()
 
-    print(movies)
 
 if __name__ == '__main__':
     main()
