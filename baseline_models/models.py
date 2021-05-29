@@ -1,10 +1,12 @@
 import re
 import pandas as pd
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sys import argv
-from loader import load_train, load_dev
+from loader import load_train, load_dev, load_train_handcrafted, load_dev_handcrafted
+import scipy
 
 class LogisticRegressionBOW:
     def __init__(self) -> None:
@@ -39,35 +41,79 @@ class LogisticRegressionBOW:
 
 
 class LogisticRegressionBOWandHand:
-    def __init__(self) -> None:
+    def __init__(self,verbose=False) -> None:
         self.bow_transformer = None
         self.model = LogisticRegression(max_iter=1000)
+        self.verbose = verbose
 
     def fit(self, features: pd.Series, labels: pd.Series) -> None:
+        if self.verbose:
+            print('Preprocessing for fitting...')
+        if self.verbose:
+            print('\tFitting BOW-object...')    
         self.bow_transformer = CountVectorizer(min_df=2).fit(features['reviewText'])
+        if self.verbose:
+            print('\tTransforming train data...')    
         train_bow = self.bow_transformer.transform(features['reviewText'])
-        all_feat = pd.concat([train_bow,])
-        self.model.fit(train_bow,labels)
+        if self.verbose:
+            print('\tConverting BOW to dense...')    
+        bow_numpy = train_bow.todense()
+        features_numpy = features.iloc[:,1:].to_numpy()
+        if self.verbose:
+            print('\tConcatenating BOW and features...')    
+        all_features = np.concatenate((bow_numpy,features_numpy),axis=1)
+        if self.verbose:
+            print('\tConverting to sparse matrix...')
+        all_features_sparse = scipy.sparse.csr_matrix(all_features)
+        if self.verbose:
+            print('Fitting model...')    
+        self.model.fit(all_features_sparse,labels)
 
-    def predict(self, text: pd.Series) -> list:
-        test_bow = self.bow_transformer.transform(text)
-        predictions = self.model.predict(test_bow)
+    def predict(self, features: pd.Series) -> list:
+        if self.verbose:
+            print('Preprocessing for predicting...')
+        if self.verbose:
+            print('\tCreating test BOW...')
+        test_bow = self.bow_transformer.transform(features['reviewText'])
+        if self.verbose:
+            print('\tConverting BOW to dense...')  
+        test_bow_numpy = test_bow.todense()
+        features_numpy = features.iloc[:,1:].to_numpy()
+        if self.verbose:
+            print('\tConcatenating BOW and features...') 
+        all_features = np.concatenate((test_bow_numpy,features_numpy),axis=1)
+        if self.verbose:
+            print('\tConverting to sparse matrix...')
+        all_features_sparse = scipy.sparse.csr_matrix(all_features)
+        if self.verbose:
+            print('Fitting model...')  
+        predictions = self.model.predict(all_features_sparse)
+        if self.verbose:
+            print('Finished!')  
         return predictions
 
-    def score(self, text: pd.Series,labels: pd.Series) -> float:
-        test_bow = self.bow_transformer.transform(text)
-        predictions = self.model.predict(test_bow)
+    def score(self, features: pd.Series,labels: pd.Series) -> float:
+        test_bow = self.bow_transformer.transform(features['reviewText'])
+        test_bow_numpy = test_bow.todense()
+        features_numpy = features.iloc[:,1:].to_numpy()
+        all_features = np.concatenate((test_bow_numpy,features_numpy),axis=1)
+        all_features_sparse = scipy.sparse.csr_matrix(all_features)
+        predictions = self.model.predict(all_features_sparse)
         return accuracy_score(labels,predictions)
 
-    def export_predict(self, text: pd.Series) -> None:
-        test_bow = self.bow_transformer.transform(text)
-        predictions = self.model.predict(test_bow)
+    def export_predict(self, features: pd.Series) -> None:
+        test_bow = self.bow_transformer.transform(features['reviewText'])
+        test_bow_numpy = test_bow.todense()
+        features_numpy = features.iloc[:,1:].to_numpy()
+        all_features = np.concatenate((test_bow_numpy,features_numpy),axis=1)
+        all_features_sparse = scipy.sparse.csr_matrix(all_features)
+        predictions = self.model.predict(all_features_sparse)
         out = [0 if item == 'negative' else 1 for item in predictions]
         df = pd.DataFrame(out, columns=['prediction'])
         df.to_csv('LogisticRegressionPredictions.csv',index_label='id')
 
-    def report(self, text: pd.Series, labels: pd.Series):
-        return classification_report(labels, self.predict(text),digits=3)
+    def report(self, features: pd.Series, labels: pd.Series):
+        return classification_report(labels, self.predict(features),digits=3)
 
 
     
@@ -85,8 +131,11 @@ def main():
     #else:
        # pass
 
-    
-
+    clf = LogisticRegressionBOWandHand(verbose=True)
+    train = load_train_handcrafted()
+    dev = load_dev_handcrafted()
+    clf.fit(train.iloc[:,:-1],train['sentiment'])
+    print(clf.report(dev.iloc[:,:-1],dev['sentiment']))
 
 
 
