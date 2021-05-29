@@ -2,31 +2,31 @@ Logistic regression trained on BOW of balanced music reviews train, tested on ba
 
               precision    recall  f1-score   support
 
-    negative      0.870     0.902     0.885      4315
-    positive      0.923     0.897     0.910      5681
+    negative      0.895     0.902     0.898      4315
+    positive      0.901     0.894     0.898      4313
 
-    accuracy                          0.899      9996
-   macro avg      0.896     0.900     0.898      9996
-weighted avg      0.900     0.899     0.899      9996
+    accuracy                          0.898      8628
+   macro avg      0.898     0.898     0.898      8628
+weighted avg      0.898     0.898     0.898      8628
 
 
 Logistic regression trained on balanced BOW of music reviews train, tested on balanced BOW of hard cases:
 
               precision    recall  f1-score   support
 
-    negative      0.620     0.615     0.618      2348
-    positive      0.543     0.547     0.545      1958
+    negative      0.577     0.615     0.595      1958
+    positive      0.588     0.548     0.567      1958
 
-    accuracy                          0.585      4306
-   macro avg      0.581     0.581     0.581      4306
-weighted avg      0.585     0.585     0.585      4306
+    accuracy                          0.582      3916
+   macro avg      0.582     0.582     0.581      3916
+weighted avg      0.582     0.582     0.581      3916
 
 
 Logistic regression trained on balanced BOW of music reviews train, tested on balanced BOW of movie reviews:
 
               precision    recall  f1-score   support
 
-    negative      0.760     0.902     0.825     25000
+    negative      0.760     0.901     0.825     25000
     positive      0.879     0.715     0.788     25000
 
     accuracy                          0.808     50000
