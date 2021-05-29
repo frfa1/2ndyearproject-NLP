@@ -128,14 +128,8 @@ def main():
         acc_score = clf.score(dev['reviewText'],dev['sentiment'])
         clf.export_predict(dev['reviewText'])
         print('Unit test finished successfully')
-    #else:
-       # pass
-
-    clf = LogisticRegressionBOWandHand(verbose=True)
-    train = load_train_handcrafted()
-    dev = load_dev_handcrafted()
-    clf.fit(train.iloc[:,:-1],train['sentiment'])
-    print(clf.report(dev.iloc[:,:-1],dev['sentiment']))
+    else:
+        pass
 
 
 
