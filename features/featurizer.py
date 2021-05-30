@@ -50,6 +50,7 @@ def make_all(docs,labels, scale=True,keep_text=True, error_info=False, export=Fa
     features['num_exclamation_marks'] = create_exclamation_marks(docs)
     features['num_question_marks'] = create_question_marks(docs)
     features['emoticon_sentiment'] = create_emoticon(docs)
+    features['shoutcase_count'] = create_shoutcase_count(docs)
 
 
     if not validate_features(features):
@@ -100,7 +101,7 @@ def main():
     
         tmp = make_all(dev['reviewText'],dev['sentiment'],scale=True,keep_text=True,export=False)
 
-        print(tmp['emoticon_sentiment'])
+        print(tmp['shoutcase_count'])
     else:
         make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='hard_handcrafted')
 
