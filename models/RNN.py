@@ -102,15 +102,15 @@ class RNN(nn.Module):
         self.embedding = nn.Embedding(self.vocab_size+1, emb_dim) # random embs   
 
         self.gru1 = nn.GRU(emb_dim, self.hidden_size1, self.num_layers1, batch_first=True, bidirectional=True, dropout=0.2) # With emb layer
-        self.gru2 = nn.GRU(self.hidden_size1 * 2, self.hidden_size2, self.num_layers2, batch_first=True, bidirectional=True, dropout=0.2)
+        #self.gru2 = nn.GRU(self.hidden_size1 * 2, self.hidden_size2, self.num_layers2, batch_first=True, bidirectional=True, dropout=0.2)
 
         # Layers features
         if self.num_features:
-            self.feat_linear = nn.Linear(self.num_features, self.num_features)
-            self.fc3 = nn.Linear(self.hidden_size2 * self.sequence_length * 2 + self.num_features, out_features=2)
+            #self.feat_linear = nn.Linear(self.num_features, self.num_features)
+            self.fc3 = nn.Linear(self.hidden_size1 * self.sequence_length * 2 + self.num_features, out_features=2)
 
         else:
-            self.fc3 = nn.Linear(self.hidden_size2 * self.sequence_length * 2, out_features=2)
+            self.fc3 = nn.Linear(self.hidden_size1 * self.sequence_length * 2, out_features=2)
 
         # Criterion
         self.loss = nn.CrossEntropyLoss()
@@ -128,13 +128,13 @@ class RNN(nn.Module):
 
         # Forward text
         out, _ = self.gru1(embedded_text)
-        out, _ = self.gru2(out)
+        #out, _ = self.gru2(out)
         out = out.reshape(out.shape[0], -1)
 
         # Forward features
         if self.num_features:
-            feat_out = self.feat_linear(x_feat)
-            out = torch.cat((out, feat_out), 1)
+            #feat_out = self.feat_linear(x_feat)
+            out = torch.cat((out, x_feat), 1)
         out = self.fc3(out)
 
         return out
@@ -291,7 +291,7 @@ def main():
 
     learning_rate = 0.001
     momentum = 0.9
-    num_epochs = 3
+    num_epochs = 10
 
     # this is the call to the wrapper of the RNN model. It can train on the data loaded from above or it can load an already saved
     # model so that you can skip the training process and go straight to predictions.
