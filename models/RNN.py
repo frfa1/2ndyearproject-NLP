@@ -13,6 +13,7 @@ from preprocessing import get_vocab, binary_y, new_preprocessing
 from loader import load_train, load_dev, load_movies, load_train_handcrafted, load_dev_handcrafted, load_hard_handcrafted, load_movies_handcrafted
 
 import pickle
+import joblib
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -163,7 +164,7 @@ class RNN(nn.Module):
                 running_loss += loss.item() # append loss
 
                 # print statistics
-                m = 100 # print every m mini-batches
+                m = 10 # print every m mini-batches
                 if i % m == 0 and i != 0:    # print every 200 mini-batches
                     train_losses.append(running_loss / m) # Append average loss to train_losses
 
@@ -193,8 +194,7 @@ class RNN(nn.Module):
         epoch_score_df = pd.DataFrame(epoch_score, columns=["epoch", "train_loss", "val_loss", "val_accuracy"])
 
         if save_model:
-            with open('pickles/trainedNNvanilla.pickle', 'wb') as f:
-                pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+            joblib.dump(self,'50_40_50_4.joblib')
         return epoch_score_df
 
 
@@ -229,9 +229,9 @@ class RNN(nn.Module):
             test_predictions = self(features.float())
             _, predicted = torch.max(test_predictions,1)
 
-        #if labels:
-        #print(classification_report(labels,predicted))
-        #return predicted
+        if labels:
+            print(classification_report(labels,predicted))
+            return predicted
 
 
 def runNN(
@@ -260,18 +260,17 @@ def runNN(
         print(net.learn(learning_rate,momentum,num_epochs,dump_trained))
     if use_trained:
         print('Loading trained model...')
-        with open('pickles/trainedNNvanilla.pickle', 'rb') as f:
-            net = pickle.load(f)
+        net = joblib.load('50_40_50_3.joblib')
 
-    print('Predicting...')
-    y_pred = net.predict(test_X,labels=test_y)
+    #print('Predicting...')
+    #y_pred = net.predict(test_X,labels=test_y)
 
 
 
 def main():
     train = load_train_handcrafted()
     dev = load_dev_handcrafted()
-    test = load_movies_handcrafted()
+    test = load_hard_handcrafted()
 
     sequence_length = 60 # pickles currently at 60, if you change, then set make_data to True
     make_data = False
@@ -287,12 +286,12 @@ def main():
     num_layers1 = 2
     hidden_size2 = 40
     num_layers2 = 2
-    emb_dim = 400
-    num_features = 0 # can be between 0 and 13
+    emb_dim = 50 # 50, 100 , 300
+    num_features = data_shape[1] - sequence_length
 
     learning_rate = 0.001
     momentum = 0.9
-    num_epochs = 1
+    num_epochs = 3
 
     # this is the call to the wrapper of the RNN model. It can train on the data loaded from above or it can load an already saved
     # model so that you can skip the training process and go straight to predictions.
@@ -314,7 +313,7 @@ def main():
         momentum,
         num_epochs,
         num_features,
-        #dump_trained=True,
+        dump_trained=True,
         use_trained=False # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
     )
     
