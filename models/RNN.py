@@ -258,9 +258,11 @@ def runNN(
         net = RNN(train_batches,dev_batches,hidden_size1, hidden_size2, num_layers1, num_layers2, sequence_length, len(vocab), emb_dim, num_features=n_features).float()
         print(net.learn(learning_rate,momentum,num_epochs,dump_trained))
     if use_trained:
-        with open('pickles/trainedNN.pickle', 'rb') as f:
+        print('Loading trained model...')
+        with open('pickles/trainedNNvanilla.pickle', 'rb') as f:
             net = pickle.load(f)
 
+    print('Predicting...')
     y_pred = net.predict(test_X,labels=test_y)
 
 
@@ -308,7 +310,7 @@ def main():
         momentum,
         num_epochs,
         num_features,
-        dump_trained=True
+        use_trained=True
     )
     
 
