@@ -236,12 +236,20 @@ class RNN(nn.Module):
 def plotting(df):
     import matplotlib.pyplot as plt
     # Loss plot
-    print(list(df[""]))
-    plt.figure()
-    plt.plot(df)
-    plt.savefig("epoch_plot")
+    #print(list(df[""]))
+    fig, ax = plt.subplots()
+    ax.set_title('Training and validation loss')
+    ax.plot(df[['train_loss', 'val_loss', 'val_accuracy']], label=df[['train_loss', 'val_loss', 'val_accuracy']].columns)
+    ax.legend()
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Loss')
+    xs = [i for i in range(len(df))]
+    xs_text = [str(i+1) for i in range(len(df))]
+    ax.set_xticks(xs)
+    ax.set_xticklabels(xs_text)
 
-    return
+    plt.savefig("epoch_plot")
+    return None
 
 def runNN(
         train_batches,
