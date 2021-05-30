@@ -1,5 +1,6 @@
 import re
-
+import spacy
+import numpy as np
 
 """
 This module contains functions for creating the following features:
