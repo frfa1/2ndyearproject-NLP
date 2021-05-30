@@ -4,8 +4,10 @@ import re
 """
 This module contains functions for creating the following features:
 
-1. Elongated 
-2. 
+1. Elongated - counts presence of words elongated with consequtive similar characters e.g. yeeeees!,nooo
+2. Emoticon counts - counts positive and negative emoticons and returns their difference
+3. Avg word length - counts average number of characters in the words in a review
+4. Irrealis - counts presence of irrealis words (should,could,would)
 
 """
 
