@@ -289,6 +289,26 @@ def create_exclamation_marks(data, regex_pattern="!", export=False):
     else:
         return exclamation_marks
 
+def create_shoutcase_count(data, export=False):
+    """
+    Returns -> shoutcase_count: Number of all-caps words of length 3 or more in the review
+    """
+    shoutcase_count = []
+    for review in data:
+        # remove words of length 2 or less (Don't want I, A, CD etc. to count as a shoutcase)
+        new_review = ' '.join([i for i in review.split() if len(i)>2])
+
+        tokens = new_review.split()
+        count = sum(map(str.isupper, tokens))
+        shoutcase_count.append(count)
+
+    if export:
+        with open('../data/shoutcase_count.txt','w') as scc:
+            for line in shoutcase_count:
+                scc.write(str(line)+'\n')
+
+    return shoutcase_count
+
 
 
 def create_question_marks(data, regex_pattern="\?", export=False):
