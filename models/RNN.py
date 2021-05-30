@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import accuracy_score,classification_report
 
 from preprocessing import get_vocab, binary_y, new_preprocessing
-from loader import load_train, load_dev, load_movies
+from loader import load_train, load_dev, load_movies, load_train_handcrafted, load_dev_handcrafted, load_hard_handcrafted, load_movies_handcrafted
 
 import pickle
 
@@ -230,8 +230,8 @@ class RNN(nn.Module):
             _, predicted = torch.max(test_predictions,1)
 
         #if labels:
-        print(classification_report(labels,predicted))
-        return predicted
+        #print(classification_report(labels,predicted))
+        #return predicted
 
 
 def runNN(
@@ -269,9 +269,9 @@ def runNN(
 
 
 def main():
-    train = load_train()
-    dev = load_dev()
-    test = load_movies()
+    train = load_train_handcrafted()
+    dev = load_dev_handcrafted()
+    test = load_movies_handcrafted()
 
     sequence_length = 60 # pickles currently at 60, if you change, then set make_data to True
     make_data = False
@@ -283,9 +283,9 @@ def main():
         train_batches, dev_batches, vocab, data_shape, test_X,test_y = load_pickled()
     
     # the below variables can be changed as you like
-    hidden_size1 = 100
+    hidden_size1 = 50
     num_layers1 = 2
-    hidden_size2 = 80
+    hidden_size2 = 40
     num_layers2 = 2
     emb_dim = 400
     num_features = 0 # can be between 0 and 13
@@ -315,7 +315,7 @@ def main():
         num_epochs,
         num_features,
         #dump_trained=True,
-        use_trained=True # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
+        use_trained=False # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
     )
     
 
