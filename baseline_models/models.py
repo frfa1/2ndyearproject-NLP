@@ -116,6 +116,44 @@ class LogisticRegressionBOWandHand:
         return classification_report(labels, self.predict(features),digits=3)
 
 
+
+
+class LogisticRegressionFeatures:
+    def __init__(self,verbose=False) -> None:
+        self.bow_transformer = None
+        self.model = LogisticRegression(max_iter=1000)
+        self.verbose = verbose
+
+    def fit(self, features, labels: pd.Series) -> None:
+        
+        print('Fitting model...')    
+        self.model.fit(features,labels)
+
+    def predict(self,features) -> list:
+        if self.verbose:
+            print('Predicting...')  
+        predictions = self.model.predict(features)
+        return predictions
+
+    def score(self, features: pd.Series,labels: pd.Series) -> float:
+        predictions = self.model.predict(features)
+        return accuracy_score(labels,predictions)
+
+    def export_predict(self, text,features: pd.Series) -> None:
+        test_bow = self.bow_transformer.transform(text)
+        test_bow_numpy = test_bow.todense()
+        features_numpy = features.to_numpy()
+        all_features = np.concatenate((test_bow_numpy,features_numpy),axis=1)
+        all_features_sparse = scipy.sparse.csr_matrix(all_features)
+        predictions = self.model.predict(all_features_sparse)
+        out = [0 if item == 'negative' else 1 for item in predictions]
+        df = pd.DataFrame(out, columns=['prediction'])
+        df.to_csv('LogisticRegressionPredictions.csv',index_label='id')
+
+    def report(self, features: pd.Series, labels: pd.Series):
+        return classification_report(labels, self.predict(features),digits=3)
+
+
     
 
 def main():

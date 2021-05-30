@@ -2,7 +2,7 @@
 LOGISTIC REGRESSION ON BOW
 
 
-Logistic regression trained on BOW of balanced music reviews train, tested on balanced BOW of music reviews dev:
+Logistic regression trained on BOW of balanced music reviews train, tested on  BOW balanced of music reviews dev:
 
               precision    recall  f1-score   support
 
@@ -14,7 +14,7 @@ Logistic regression trained on BOW of balanced music reviews train, tested on ba
 weighted avg      0.898     0.898     0.898      8628
 
 
-Logistic regression trained on balanced BOW of music reviews train, tested on balanced BOW of hard cases:
+Logistic regression trained on  BOW balancedof music reviews train, tested on BOW balanced of hard cases:
 
               precision    recall  f1-score   support
 
@@ -26,7 +26,7 @@ Logistic regression trained on balanced BOW of music reviews train, tested on ba
 weighted avg      0.582     0.581     0.581      3916
 
 
-Logistic regression trained on balanced BOW of music reviews train, tested on balanced BOW of movie reviews:
+Logistic regression trained on  BOW balancedof music reviews train, tested on BOW balanced of movie reviews:
 
               precision    recall  f1-score   support
 
