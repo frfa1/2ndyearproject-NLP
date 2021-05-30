@@ -226,11 +226,11 @@ class RNN(nn.Module):
     def predict(self,features,labels=None):
         self.eval()
         with torch.no_grad():
-            test_predictions = self(features)
+            test_predictions = self(features.float())
             _, predicted = torch.max(test_predictions,1)
 
-        if labels:
-            print(classification_report(labels,predicted))
+        #if labels:
+        print(classification_report(labels,predicted))
         return predicted
 
 
@@ -263,8 +263,8 @@ def runNN(
         with open('pickles/trainedNNvanilla.pickle', 'rb') as f:
             net = pickle.load(f)
 
-    #print('Predicting...')
-    #y_pred = net.predict(test_X,labels=test_y)
+    print('Predicting...')
+    y_pred = net.predict(test_X,labels=test_y)
 
 
 
@@ -314,8 +314,8 @@ def main():
         momentum,
         num_epochs,
         num_features,
-        dump_trained=True,
-        use_trained=False # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
+        #dump_trained=True,
+        use_trained=True # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
     )
     
 
