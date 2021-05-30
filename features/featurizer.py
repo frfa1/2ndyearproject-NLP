@@ -49,6 +49,7 @@ def make_all(docs,labels, scale=True,keep_text=True, error_info=False, export=Fa
     features['negation_in_second_half'] = create_negation_discourse(docs)[1]
     features['num_exclamation_marks'] = create_exclamation_marks(docs)
     features['num_question_marks'] = create_question_marks(docs)
+    features['emoticon_sentiment'] = create_emoticon(docs)
 
 
     if not validate_features(features):
@@ -99,9 +100,9 @@ def main():
     
         tmp = make_all(dev['reviewText'],dev['sentiment'],scale=True,keep_text=True,export=False)
 
-        print(tmp)
-
-    make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='hard_handcrafted')
+        print(tmp['emoticon_sentiment'])
+    else:
+        make_all(dev['reviewText'],dev['sentiment'],scale=True,export=True,export_name='hard_handcrafted')
 
 if __name__ == '__main__':
     main()
