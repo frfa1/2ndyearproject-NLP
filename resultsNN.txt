@@ -1,0 +1,11 @@
+
+NN trained on with NO handcrafted features, tested on movie reviews
+
+              precision    recall  f1-score   support
+
+           0       0.58      0.79      0.67     25000
+           1       0.67      0.43      0.53     25000
+
+    accuracy                           0.61     50000
+   macro avg       0.63      0.61      0.60     50000
+weighted avg       0.63      0.61      0.60     50000
