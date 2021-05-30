@@ -19,23 +19,32 @@ def run_LogisticBOWandHand(train_features,train_labels,test_features,test_labels
     if return_pred:
         return clf.predict(test_features)
 
-def run_ablation_Logistic(train_features,train_labels,test_features,test_labels=None,return_pred=False):
+def run_ablation_Logistic(train_features,train_labels,test_features,test_labels=None,return_pred=False,verbose=False):
     
     n_handcrafted = train_features.shape[1]
     assert train_features.shape[1] == test_features.shape[1]
 
+    x = [17]
+    accuracies = [0.818]
+
     for i in range(n_handcrafted):
-        print(':: Running ablation study ::')
-        print('\nEvaluated features apart BOW:',n_handcrafted-i)
+        if verbose:
+            print(':: Running ablation study ::')
+            print('\nEvaluated features:',n_handcrafted-i)
         train_X = train_features.iloc[:,i:]
         test_X = test_features.iloc[:,i:]
-        print()
+        if verbose:
+            print()
         clf = LogisticRegressionFeatures(verbose=True)
         clf.fit(train_X,train_labels)
-        print()
-        print(clf.report(test_X,test_labels))
-        print()
+        if verbose:
+            print()
+            print(clf.report(test_X,test_labels))
+            print()
+        x.append(n_handcrafted-i)
+        accuracies.append(clf.score(test_X,test_labels))
 
+    return x,accuracies
 
 def main():
     train = load_train(balance=True)
@@ -72,8 +81,10 @@ def main():
     'negated_negative','negation_in_first_half','negation_in_first_half','negation_in_second_half',
     'num_question_marks','num_exclamation_marks','emoticon_sentiment','shoutcase_count']
 
-    run_ablation_Logistic(train_handcrafted[features_to_use],train_handcrafted['sentiment'],movies_handcrafted[features_to_use] ,test_labels=movies_handcrafted['sentiment'] )
+    n,accuracies = run_ablation_Logistic(train_handcrafted[features_to_use],train_handcrafted['sentiment'],movies_handcrafted[features_to_use] ,test_labels=movies_handcrafted['sentiment'],verbose=True )
 
+    print(n)
+    print(accuracies)
 
 if __name__ == '__main__':
     main()
