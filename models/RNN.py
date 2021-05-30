@@ -313,7 +313,8 @@ def main():
         momentum,
         num_epochs,
         num_features,
-        use_trained=False
+        dump_trained=True,
+        use_trained=False # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
     )
     
 
