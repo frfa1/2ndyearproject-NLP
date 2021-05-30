@@ -9,3 +9,5 @@ NN trained on with NO handcrafted features, tested on movie reviews
     accuracy                           0.61     50000
    macro avg       0.63      0.61      0.60     50000
 weighted avg       0.63      0.61      0.60     50000
+
+
