@@ -291,7 +291,7 @@ def main():
 
     learning_rate = 0.001
     momentum = 0.9
-    num_epochs = 10
+    num_epochs = 4
 
     # this is the call to the wrapper of the RNN model. It can train on the data loaded from above or it can load an already saved
     # model so that you can skip the training process and go straight to predictions.
