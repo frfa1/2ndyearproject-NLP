@@ -225,8 +225,9 @@ class RNN(nn.Module):
 
     def predict(self,features,labels=None):
         self.eval()
-        test_predictions = self(features)
-        _, predicted = torch.max(test_predictions,1)
+        with torch.no_grad():
+            test_predictions = self(features)
+            _, predicted = torch.max(test_predictions,1)
 
         if labels:
             print(classification_report(labels,predicted))
