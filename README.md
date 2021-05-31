@@ -12,4 +12,4 @@ We are using GloVe word embeddings for the RNN model. The file containing these 
 
 ### Logistic regression
 
-For the baseline logistic regression model, run the `wrappers.py` module in baseline_models. Wrapper functions and the call 
+For the baseline logistic regression model, run the `wrappers.py` module in baseline_models. 
