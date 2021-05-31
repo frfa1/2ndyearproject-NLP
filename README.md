@@ -16,6 +16,8 @@ For the baseline logistic regression model, run the [`wrappers.py`](https://gith
 
 Examples of results of these are in the same folder in [`results.txt`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/results.txt)
 
+Errors of the model when predicting on dev data can be seen in [`errors.csv`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/errors.csv)
+
 The wrapper module is curently set up to run the ablation study and prints it nicely to the console.
 
 ### RNN
