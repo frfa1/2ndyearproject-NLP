@@ -22,7 +22,7 @@ The wrapper module is curently set up to run the ablation study and print it nic
 
 For the RNN model, go to the models folder and run [`RNN.py`](https://github.itu.dk/frph/2ndyearproject/blob/master/models/RNN.py) - this module both contains the class definition of the model but also the wrapper function to run the model on some input data. 
 
-Each of the RNN_X.py modules contain some variation in the included number of features for the ablation study. 
+Each of the `RNN_X.py modules contain some variation in the included number of features for the ablation study. 
 
 
 
