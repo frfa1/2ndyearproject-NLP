@@ -4,4 +4,8 @@
 
 This repository contains all code in order to run the experiments conducted in the project *"Evaluating the affect of hand-crafted features in sentiment analysis"*
 
-If possible describe how they can reproduce our project (maybe take inspiration from smbr repo)
+## How to reproduce our results
+
+### Logistic regression
+
+For the baseline logistic regression model, run the `wrappers.py` module in baseline_models.
