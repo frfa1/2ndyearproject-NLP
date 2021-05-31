@@ -16,13 +16,15 @@ For the baseline logistic regression model, run the [`wrappers.py`](https://gith
 
 Examples of results of these are in the same folder in [`results.txt`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/results.txt)
 
-The wrapper module is curently set up to run the ablation study and print it nicely to the console.
+Errors of the model when predicting on dev data can be seen in [`errors.csv`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/errors.csv)
+
+The wrapper module is curently set up to run the ablation study and prints it nicely to the console.
 
 ### RNN
 
 For the RNN model, go to the models folder and run [`RNN.py`](https://github.itu.dk/frph/2ndyearproject/blob/master/models/RNN.py) - this module both contains the class definition of the model but also the wrapper function to run the model on some input data. 
 
-Each of the `RNN_X.py` modules contain some variation in the included number of features for the ablation study. 
+Each of the `RNN_X.py` modules contain some variation in the included number of features for the ablation study. These are prepared for running on the ITU high performance cluster. Just ssh into hpc.itu.dk, copy the repo ***and*** embeddings onto the cluster and `sbatch` all the `runNN_X.sh` scripts.
 
 
 
