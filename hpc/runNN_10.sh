@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=RNN_0
+#SBATCH --job-name=RNN_10
 #SBATCH --output=logs/job.%j.out
 #SBATCH --cpus-per-task=4
 #SBATCH --time=24:00:00
@@ -10,5 +10,6 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 echo Executing...
-python3 ../models/RNN_0.py
+echo RNN_10
+python3 ../models/RNN_10.py
 echo Finished!
