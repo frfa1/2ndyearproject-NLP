@@ -8,4 +8,4 @@ This repository contains all code in order to run the experiments conducted in t
 
 ### Logistic regression
 
-For the baseline logistic regression model, run the `wrappers.py` module in baseline_models.
+For the baseline logistic regression model, run the `wrappers.py` module in baseline_models. Wrapper functions and the call 
