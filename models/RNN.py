@@ -273,7 +273,7 @@ def main():
     test = load_hard_handcrafted()
 
     sequence_length = 60 # pickles currently at 60, if you change, then set make_data to True
-    make_data = False
+    make_data = True
 
     if make_data:
         train_batches, dev_batches, vocab, data_shape, test_X,test_y = get_data(train,dev,test,sequence_length,dump=True)
@@ -313,7 +313,7 @@ def main():
         momentum,
         num_epochs,
         num_features,
-        dump_trained=True,
+        dump_trained=False,
         use_trained=False # setting this to true requires that you have already trained a model and dumped it in the pickles folder. To do so set dump_trained to True and run the script
     )
     
