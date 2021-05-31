@@ -6,7 +6,7 @@ This repository contains all code in order to run the experiments conducted in t
 
 ## Required data not in this repo
 
-We are using GloVe word embeddings for the RNN model. The file containing these is too big to be in the repo, and one thus must add a folder named embeddings and add the `glove.6B.50d.txt` file to it.
+We are using GloVe word embeddings for the RNN model. The file containing these is too big to be in the repo, and one thus must add a folder named embeddings and add the [`glove.6B.50d.txt`](https://www.kaggle.com/watts2/glove6b50dtxt) file to it.
 
 ## How to reproduce our results
 
