@@ -16,7 +16,7 @@ For the baseline logistic regression model, run the [`wrappers.py`](https://gith
 
 Examples of results of these are in the same folder in [`results.txt`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/results.txt)
 
-The wrapper module is curently set up to run the ablation study and print it nicely to the console.
+The wrapper module is curently set up to run the ablation study and prints it nicely to the console.
 
 ### RNN
 
