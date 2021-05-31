@@ -14,7 +14,7 @@ We are using GloVe word embeddings for the RNN model. The file containing these 
 
 For the baseline logistic regression model, run the [`wrappers.py`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/wrappers.py) module in baseline_models. The script contains wrapper functions for the baseline models such that various data inputs can easily be tested. 
 
-Examples of results of these are in the same folder in `results.txt`
+Examples of results of these are in the same folder in [`results.txt`](https://github.itu.dk/frph/2ndyearproject/blob/master/baseline_models/results.txt)
 
 The wrapper module is curently set up to run the ablation study and print it nicely to the console.
 
